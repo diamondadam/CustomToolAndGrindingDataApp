@@ -2,7 +2,11 @@ package com.example.customtooldataapp.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.customtooldataapp.R;
+import com.example.customtooldataapp.adapters.TransactionRecyclerAdapter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,6 +25,9 @@ import com.example.customtooldataapp.R;
  * create an instance of this fragment.
  */
 public class CurrentFragment extends Fragment {
+
+    private RecyclerView recyclerView;
+    private TransactionRecyclerAdapter transactionRecyclerAdapter;
 
     public CurrentFragment() {
         // Required empty public constructor
@@ -42,9 +53,23 @@ public class CurrentFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
            //Assign Arguments
         }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        recyclerView = getView().findViewById(R.id.current_recycler);
+        ArrayList<String> jobNames = new ArrayList<String>(
+                Arrays.asList("66555", "55555", "15222", "Testing Job Name")
+        );
+        transactionRecyclerAdapter = new TransactionRecyclerAdapter(getContext(), jobNames);
+        recyclerView.setAdapter(transactionRecyclerAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override

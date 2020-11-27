@@ -3,7 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/transactionContainer"
     android:layout_width="match_parent"
-    android:layout_height="100dp">
+    android:layout_height="100dp"
+    android:layout_margin="5dp"
+    android:background="@drawable/transaction_bg"
+    android:elevation="15dp"
+    android:padding="5dp">
 
     <TextView
         android:id="@+id/jobName"
@@ -11,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
+        android:textSize="15dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="50dp"
         android:layout_marginBottom="35dp"
@@ -23,9 +28,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="35dp"
-        android:text="Operation Name" />
+        android:layout_marginEnd="19dp"
+        android:layout_marginBottom="23dp"
+        android:text="Operation Name"
+        android:textSize="30dp" />
 
 
 </RelativeLayout>
