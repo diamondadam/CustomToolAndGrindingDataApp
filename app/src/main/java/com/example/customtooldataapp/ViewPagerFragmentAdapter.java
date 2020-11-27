@@ -1,0 +1,32 @@
+package com.example.customtooldataapp;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+public class ViewPagerFragmentAdapter extends FragmentStateAdapter {
+
+    public ViewPagerFragmentAdapter(@NonNull FragmentManager fragmentManager, Lifecycle lifecycle) {
+        super(fragmentManager, lifecycle);
+    }
+
+    @NonNull
+    @Override
+    public Fragment createFragment(int position) {
+        switch (position) {
+            case 0:
+                return new CurrentFragment();
+            case 1:
+                return new PastFragment();
+            default:
+                return new CurrentFragment();
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return 2;
+    }
+}

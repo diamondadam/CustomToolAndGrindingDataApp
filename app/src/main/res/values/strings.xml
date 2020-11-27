@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">CustomToolDataApp</string>
+    <string name="current">Current</string>
+    <string name="old">Old</string>
+    <string name="settings">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_new_job">Add New Job</string>
+    <string name="current_fragment">current_fragment</string>
 </resources>
