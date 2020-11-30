@@ -20,7 +20,7 @@
         android:layout_marginEnd="50dp"
         android:layout_marginBottom="35dp"
         android:layout_toStartOf="@+id/operationName"
-        android:text="Job Name" />
+        android:text="Times" />
 
     <TextView
         android:id="@+id/operationName"
@@ -30,7 +30,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="30dp"
-        android:text="Operation Name"
+        android:text="Times"
         android:textSize="30dp" />
 
 
