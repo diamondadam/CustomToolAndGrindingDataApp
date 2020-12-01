@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         //ViewPager2 Initialization
         ViewPager2 viewPager2 = findViewById(R.id.viewpager2);
+        viewPager2.setUserInputEnabled(false);
         ViewPagerFragmentAdapter adapter = new ViewPagerFragmentAdapter(getSupportFragmentManager(), getLifecycle());
         viewPager2.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
         viewPager2.setAdapter(adapter);

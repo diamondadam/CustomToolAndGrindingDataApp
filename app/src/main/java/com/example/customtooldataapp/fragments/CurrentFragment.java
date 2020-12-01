@@ -65,7 +65,7 @@ public class CurrentFragment extends Fragment {
         ArrayList<String> jobNames = new ArrayList<String>(
                 Arrays.asList("66555", "55555", "15222", "Testing Job Name")
         );
-        transactionRecyclerAdapter = new TransactionRecyclerAdapter(getContext(), jobNames);
+        transactionRecyclerAdapter = new TransactionRecyclerAdapter(this, jobNames);
         recyclerView.setAdapter(transactionRecyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 

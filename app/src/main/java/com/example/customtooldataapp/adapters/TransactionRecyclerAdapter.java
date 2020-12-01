@@ -5,23 +5,31 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.MarginPageTransformer;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.customtooldataapp.R;
 
 import java.util.ArrayList;
 
 public class TransactionRecyclerAdapter extends RecyclerView.Adapter<TransactionRecyclerAdapter.TransactionViewHolder> {
-    LayoutInflater layoutInflater;
-    ArrayList<String> jobNames;
+    private LayoutInflater layoutInflater;
+    private ArrayList<String> jobNames;
+    private FragmentManager fragmentManager;
+    private Lifecycle lifecycle;
 
-    public TransactionRecyclerAdapter(Context context, ArrayList<String> jobNames){
-        this.layoutInflater = LayoutInflater.from(context);
+    public TransactionRecyclerAdapter(Fragment fragment, ArrayList<String> jobNames){
+        this.layoutInflater = LayoutInflater.from(fragment.getContext());
         this.jobNames = jobNames;
+        this.fragmentManager = fragment.getFragmentManager();
+        this.lifecycle = fragment.getLifecycle();
     }
 
     @NonNull
@@ -33,8 +41,6 @@ public class TransactionRecyclerAdapter extends RecyclerView.Adapter<Transaction
 
     @Override
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
-        String currentJobName = jobNames.get(position);
-        holder.jobName.setText(currentJobName);
     }
 
     @Override
@@ -43,19 +49,23 @@ public class TransactionRecyclerAdapter extends RecyclerView.Adapter<Transaction
     }
 
     class TransactionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private TextView jobName;
-        private TextView operationName;
+        private ViewPager2 viewPager2;
 
         public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
-            jobName = itemView.findViewById(R.id.jobName);
-            operationName = itemView.findViewById(R.id.operationName);
+            Log.d("TransactionViewHolder", "Location");
+            viewPager2 = itemView.findViewById(R.id.transactionViewPager);
+            ViewPagerTransactionAdapter adapter = new ViewPagerTransactionAdapter(fragmentManager, lifecycle);
+            viewPager2.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+            viewPager2.setAdapter(adapter);
+            viewPager2.setPageTransformer(new MarginPageTransformer(1500));
+
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            Log.d("OnClick", String.valueOf(jobName.getText()));
+            Log.d("TRA: OnClick", "Location");
         }
     }
 }

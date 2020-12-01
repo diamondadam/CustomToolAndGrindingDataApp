@@ -71,7 +71,7 @@ public class PastFragment extends Fragment {
         ArrayList<String> jobNames = new ArrayList<String>(
                 Arrays.asList("11111", "44444", "55669", "Testing Past Name")
         );
-        transactionRecyclerAdapter = new TransactionRecyclerAdapter(getContext(), jobNames);
+        transactionRecyclerAdapter = new TransactionRecyclerAdapter(this, jobNames);
         recyclerView.setAdapter(transactionRecyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
