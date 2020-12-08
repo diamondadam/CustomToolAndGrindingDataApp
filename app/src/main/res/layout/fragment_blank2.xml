@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.error.NoConnectionFragment">
+    tools:context=".ui.data.BlankFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text='"No Connection"' />
+        android:text="@string/hello_blank_fragment" />
 
 </FrameLayout>

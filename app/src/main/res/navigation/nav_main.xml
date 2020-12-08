@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/transactionsFragment">
+
+    <fragment
+        android:id="@+id/transactionsFragment"
+        android:name="com.example.customtooldataapp.ui.transactions.TransactionsFragment"
+        android:label="fragment_transactions"
+        tools:layout="@layout/fragment_transactions" >
+        <action
+            android:id="@+id/action_transactionsFragment_to_employeeHoursFragment"
+            app:destination="@id/employeeHoursFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/employeeHoursFragment"
+        android:name="com.example.customtooldataapp.ui.employeehours.EmployeeHoursFragment"
+        android:label="fragment_employee_hours"
+        tools:layout="@layout/fragment_employee_hours" />
+</navigation>

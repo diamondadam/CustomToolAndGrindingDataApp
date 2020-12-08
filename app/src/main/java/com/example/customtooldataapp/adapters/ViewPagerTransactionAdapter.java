@@ -1,32 +1,30 @@
 package com.example.customtooldataapp.adapters;
 
-import android.content.Context;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.fragments.NoConnectionFragment;
-import com.example.customtooldataapp.fragments.items.BuysFragment;
-import com.example.customtooldataapp.fragments.items.NameFragment;
-import com.example.customtooldataapp.fragments.items.PicksFragment;
-import com.example.customtooldataapp.fragments.items.QuantitiesFragment;
-import com.example.customtooldataapp.fragments.items.TimesFragment;
+import com.example.customtooldataapp.model.Transaction;
+import com.example.customtooldataapp.ui.error.NoConnectionFragment;
+import com.example.customtooldataapp.ui.data.BuysFragment;
+import com.example.customtooldataapp.ui.data.NameFragment;
+import com.example.customtooldataapp.ui.data.PicksFragment;
+import com.example.customtooldataapp.ui.data.QuantitiesFragment;
+import com.example.customtooldataapp.ui.data.TimesFragment;
+
+import java.util.List;
 
 public class ViewPagerTransactionAdapter extends FragmentStateAdapter {
 
-    public ViewPagerTransactionAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+    private List<Transaction> transactions;
+
+    public ViewPagerTransactionAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, List<Transaction> transactions) {
         super(fragmentManager, lifecycle);
+        this.transactions = transactions;
     }
 
     @NonNull
@@ -36,11 +34,11 @@ public class ViewPagerTransactionAdapter extends FragmentStateAdapter {
         switch (position) {
             case 0:
                 Log.d("createFragment", "0");
-                return NameFragment.newInstance();
+                return NameFragment.newInstance(transactions.get(position));
 
             case 1:
                 Log.d("createFragment", "1");
-                return QuantitiesFragment.newInstance();
+                return QuantitiesFragment.newInstance(transactions.get(position));
 
             case 2:
                 Log.d("createFragment", "2");

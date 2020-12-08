@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.fragments.items;
+package com.example.customtooldataapp.ui.error;
 
 import android.os.Bundle;
 
@@ -12,21 +12,23 @@ import com.example.customtooldataapp.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link PicksFragment#newInstance} factory method to
+ * Use the {@link NoConnectionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PicksFragment extends Fragment {
+public class NoConnectionFragment extends Fragment {
 
-    public PicksFragment() {
+    public NoConnectionFragment() {
         // Required empty public constructor
     }
 
-    public static PicksFragment newInstance() {
-        PicksFragment fragment = new PicksFragment();
-/*        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);*/
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @return A new instance of fragment NoConnectionFragment.
+     */
+    public static NoConnectionFragment newInstance() {
+        NoConnectionFragment fragment = new NoConnectionFragment();
         return fragment;
     }
 
@@ -34,6 +36,7 @@ public class PicksFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+          //Do Nothing
         }
     }
 
@@ -41,6 +44,6 @@ public class PicksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_picks, container, false);
+        return inflater.inflate(R.layout.fragment_no_connection, container, false);
     }
 }

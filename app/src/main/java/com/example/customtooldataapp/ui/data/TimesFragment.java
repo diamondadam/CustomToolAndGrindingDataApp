@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.fragments.items;
+package com.example.customtooldataapp.ui.data;
 
 import android.os.Bundle;
 
@@ -12,17 +12,17 @@ import com.example.customtooldataapp.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link QuantitiesFragment#newInstance} factory method to
+ * Use the {@link TimesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class QuantitiesFragment extends Fragment {
+public class TimesFragment extends Fragment {
 
-    public QuantitiesFragment() {
+    public TimesFragment() {
         // Required empty public constructor
     }
 
-    public static QuantitiesFragment newInstance() {
-        QuantitiesFragment fragment = new QuantitiesFragment();/*
+    public static TimesFragment newInstance() {
+        TimesFragment fragment = new TimesFragment();/*
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -41,6 +41,6 @@ public class QuantitiesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_quantities, container, false);
+        return inflater.inflate(R.layout.fragment_times, container, false);
     }
 }

@@ -10,4 +10,5 @@
     <string name="past_fragment">past_fragment</string>
     <string name="my_hours">My Hours</string>
     <string name="my_app_title">Welcome:</string>
+    <string name="employee_hours">Employee Hours</string>
 </resources>

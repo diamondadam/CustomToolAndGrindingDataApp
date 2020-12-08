@@ -8,9 +8,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.customtooldataapp.fragments.CurrentFragment;
-import com.example.customtooldataapp.fragments.NoConnectionFragment;
-import com.example.customtooldataapp.fragments.PastFragment;
+import com.example.customtooldataapp.ui.transactions.current.CurrentFragment;
+import com.example.customtooldataapp.ui.error.NoConnectionFragment;
+import com.example.customtooldataapp.ui.transactions.past.PastFragment;
 
 public class ViewPagerFragmentAdapter extends FragmentStateAdapter {
 
@@ -25,6 +25,7 @@ public class ViewPagerFragmentAdapter extends FragmentStateAdapter {
         Log.d("ViewPagerFragmentAdapt", "Position: " + position);
         switch (position) {
             case 0:
+                Log.d("ViewPagerFragmentAdapt", "CurrentFragment: " + position);
                 return CurrentFragment.newInstance();
             case 1:
                 return PastFragment.newInstance();

@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.fragments.items;
+package com.example.customtooldataapp.ui.data;
 
 import android.os.Bundle;
 

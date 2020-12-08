@@ -16,25 +16,29 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.customtooldataapp.R;
+import com.example.customtooldataapp.model.Transaction;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionRecyclerAdapter extends RecyclerView.Adapter<TransactionRecyclerAdapter.TransactionViewHolder> {
     private LayoutInflater layoutInflater;
-    private ArrayList<String> jobNames;
     private FragmentManager fragmentManager;
     private Lifecycle lifecycle;
+    private List<Transaction> transactions;
 
-    public TransactionRecyclerAdapter(Fragment fragment, ArrayList<String> jobNames){
+    public TransactionRecyclerAdapter(Fragment fragment, List<Transaction> transactions){
+        Log.d("TransactionRecyclerAdap", "Constructor");
         this.layoutInflater = LayoutInflater.from(fragment.getContext());
-        this.jobNames = jobNames;
-        this.fragmentManager = fragment.getFragmentManager();
+        this.fragmentManager = fragment.getChildFragmentManager();
         this.lifecycle = fragment.getLifecycle();
+        this.transactions = transactions;
     }
 
     @NonNull
     @Override
     public TransactionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d("TransactionRecyclerAdap", "onCreateViewHolder");
         View transactionView = layoutInflater.inflate(R.layout.item_transaction, parent, false);
         return new TransactionViewHolder(transactionView);
     }
@@ -45,7 +49,13 @@ public class TransactionRecyclerAdapter extends RecyclerView.Adapter<Transaction
 
     @Override
     public int getItemCount() {
-        return jobNames.size();
+        if(transactions == null){
+            Log.d("TransactionRecycAdapter", "Transactions are null...");
+            return 0;
+        }else{
+            Log.d("TransactionRecycAdapter", "Size" +  transactions.size());
+            return transactions.size();
+        }
     }
 
     class TransactionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -55,7 +65,7 @@ public class TransactionRecyclerAdapter extends RecyclerView.Adapter<Transaction
             super(itemView);
             Log.d("TransactionViewHolder", "Location");
             viewPager2 = itemView.findViewById(R.id.transactionViewPager);
-            ViewPagerTransactionAdapter adapter = new ViewPagerTransactionAdapter(fragmentManager, lifecycle);
+            ViewPagerTransactionAdapter adapter = new ViewPagerTransactionAdapter(fragmentManager, lifecycle, transactions);
             viewPager2.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
             viewPager2.setAdapter(adapter);
             viewPager2.setPageTransformer(new MarginPageTransformer(1500));
