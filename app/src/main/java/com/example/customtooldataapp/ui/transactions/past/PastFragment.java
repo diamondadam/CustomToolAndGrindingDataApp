@@ -15,11 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.adapters.TransactionRecyclerAdapter;
-import com.example.customtooldataapp.ui.transactions.current.CurrentViewModel;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.example.customtooldataapp.adapters.RecyclerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,7 +25,7 @@ import java.util.Arrays;
 public class PastFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private TransactionRecyclerAdapter transactionRecyclerAdapter;
+    private RecyclerAdapter recyclerAdapter;
 
     public PastFragment() {
         // Required empty public constructor
@@ -50,10 +46,14 @@ public class PastFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d("PastFragment", "onCreate");
         super.onCreate(savedInstanceState);
-        CurrentViewModel model = new ViewModelProvider(this).get(CurrentViewModel.class);
+        PastViewModel model = new ViewModelProvider(this).get(PastViewModel.class);
+        Log.d("CurrentFragment", "...Creating Adapter");
+        recyclerAdapter = new RecyclerAdapter(this, model.getTransactions());
         model.getTransactions().observe(this, transactions -> {
-            transactionRecyclerAdapter = new TransactionRecyclerAdapter(this, transactions);
+            Log.d("PastFragment", "...Updating Adapter");
+            recyclerAdapter.notifyDataSetChanged();
         });
     }
 
@@ -67,7 +67,7 @@ public class PastFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         recyclerView = getView().findViewById(R.id.past_recycler);
-        recyclerView.setAdapter(transactionRecyclerAdapter);
+        recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         super.onViewCreated(view, savedInstanceState);

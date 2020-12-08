@@ -18,13 +18,13 @@ import com.example.customtooldataapp.ui.data.TimesFragment;
 
 import java.util.List;
 
-public class ViewPagerTransactionAdapter extends FragmentStateAdapter {
+public class DataFragmentAdapter extends FragmentStateAdapter {
 
-    private List<Transaction> transactions;
+    private Transaction transaction;
 
-    public ViewPagerTransactionAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, List<Transaction> transactions) {
+    public DataFragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Transaction transaction) {
         super(fragmentManager, lifecycle);
-        this.transactions = transactions;
+        this.transaction = transaction;
     }
 
     @NonNull
@@ -34,23 +34,15 @@ public class ViewPagerTransactionAdapter extends FragmentStateAdapter {
         switch (position) {
             case 0:
                 Log.d("createFragment", "0");
-                return NameFragment.newInstance(transactions.get(position));
+                return NameFragment.newInstance(transaction);
 
             case 1:
                 Log.d("createFragment", "1");
-                return QuantitiesFragment.newInstance(transactions.get(position));
+                return QuantitiesFragment.newInstance(transaction);
 
             case 2:
                 Log.d("createFragment", "2");
-                return TimesFragment.newInstance();
-
-            case 3:
-                Log.d("createFragment", "3");
-                return PicksFragment.newInstance();
-
-            case 4:
-                Log.d("createFragment", "4");
-                return BuysFragment.newInstance();
+                return TimesFragment.newInstance(transaction);
 
             default:
                 return NoConnectionFragment.newInstance();
@@ -59,7 +51,9 @@ public class ViewPagerTransactionAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 5;
+        return 3;
     }
+
+
 }
 

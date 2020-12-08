@@ -8,11 +8,6 @@ import com.example.customtooldataapp.model.Operation;
 import com.example.customtooldataapp.model.StopForm;
 import com.example.customtooldataapp.model.Transaction;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -30,22 +25,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-//TODO: Fix POST Requests/MOVE to okhttp
 public class JobBossClient {
     private static final String UTF_8 = "UTF-8";
-    private List<HttpCookie> cookieList;
-    private HttpURLConnection conn;
-
-    private String urlBase = "http://10.10.8.4/dcmobile2/";
-
     private static final String USER_AGENT =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36";
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36";
     private static final String HOME = "/Home.aspx";
     private static final String DEFAULT = "/Default.aspx";
     private static final String JOB_ENTRIES = "/JobEntries.aspx";
@@ -59,45 +53,20 @@ public class JobBossClient {
     private static final String PICK_BY_JOB = "/PickByJob.aspx";
     private static final String JOB_DETAILS = "/JobDetails.aspx";
     private static final String OP_STOP = "OpStop.aspx";
+    private List<HttpCookie> cookieList;
+    private HttpURLConnection conn;
+    private String urlBase = "http://10.10.8.4/dcmobile2/";
 
-    private static JobBossClient instance;
-    private static Employee employee;
-
-    public static JobBossClient getInstance() {
-        if (instance == null) {
-            instance = new JobBossClient();
-        }
-        return instance;
-    }
-
-    private JobBossClient() {
-        Log.d("JBC Constructor", "Starting...");
-        employee = Employee.getInstance();
-
-    }
-
-
-    public List<Transaction> getTransactions() {
-        try{
-            init(employee);
-            return instance.getJobData(employee);
-        }catch (Exception e){
-            Log.d("JBC getTransactions", e.getMessage());
-            return new ArrayList<>();
-        }
-    }
 
     /**
      * This method establishes the initial connection with the server.
      */
-
-    private void init(Employee emp) {
+    public void init(Employee emp) throws Exception {
         // Establishes session and verifies user.
-        try {
-            Log.d("JBC Init", "Starting...");
-            postRequest(defaultFormParams(getPageContent(""), emp), DEFAULT);
+        try{
+            defaultFormParams(getPageContent(""), emp);
         }catch (Exception e){
-            Log.d("JBC Init", e.toString());
+            Log.d("JBC init", e.toString());
         }
 
     }
@@ -105,8 +74,7 @@ public class JobBossClient {
     /**
      * Returns a String containing the page html.
      */
-    public String getPageContent(String url_ext) throws Exception {
-        Log.d("JBC getPageContent", "Starting...");
+    private String getPageContent(String url_ext) throws Exception {
         CookieManager cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
         CookieStore cookieStore = cookieManager.getCookieStore();
@@ -135,9 +103,8 @@ public class JobBossClient {
             }
         }
 
-        Log.d("JBC getPageContent", "Sending 'GET' request to URL : " + urlBase.concat(url_ext));
-        Log.d("JBC getPageContent", String.valueOf(conn.getResponseCode()));
-        Log.d("JBC getPageContent", String.valueOf(conn.getURL()));
+        System.out.println("\nSending 'GET' request to URL : " + urlBase.concat(url_ext));
+        System.out.println("Response Code : " + conn.getResponseCode());
 
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String inputLine;
@@ -183,7 +150,6 @@ public class JobBossClient {
 
         conn.setDoInput(true);
         conn.setDoOutput(true);
-        conn.connect();
 
         DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
         wr.writeBytes(formParams);
@@ -191,9 +157,8 @@ public class JobBossClient {
         wr.close();
 
         System.out.println("\nSending 'POST' request to URL : " + urlBase + path);
-        System.out.println("Current URL: " + conn.getURL());
+        System.out.println("Response Code : " + conn.getResponseCode());
 
-        //System.out.println("Response Code : " + conn.getResponseCode());
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String inputLine;
         StringBuilder response = new StringBuilder();
@@ -208,24 +173,25 @@ public class JobBossClient {
     /**
      * Obtains the entry parameters, and job identification number
      */
-    private List<Transaction> getJobData(Employee emp) throws Exception {
+    public List<Transaction> getTransactions(Employee emp) throws Exception {
+        List<Transaction> transactions = new ArrayList<>();
 
         Document doc = Jsoup.parse(getPageContent(JOB_ENTRIES));
         Elements links = doc.getElementsByAttribute("href");
-        List<Transaction> transactions = new ArrayList<>();
+
         for (Element elem : links) {
             // Move through all the links and find the entry routes
             String link = elem.attr("href");
             if (link.contains("OpStop.aspx")) {
-                // Get job data
                 transactions.add(new Transaction(link, elem.text()));
+                // Get job data
                 getJob(getPageContent(JOB_DETAILS.concat("?id=" + elem.text())), emp, elem.text());
             }
         }
         return transactions;
     }
 
-    public void getJob(String html, Employee emp, String jobId) throws ParseException {
+    private void getJob(String html, Employee emp, String jobId) throws ParseException {
 
         Job job = new Job(jobId);
         Document doc = Jsoup.parse(html);
@@ -265,7 +231,7 @@ public class JobBossClient {
     /**
      * Sets the session ID in the base url.
      */
-    public void setSessionId(String url) {
+    private void setSessionId(String url) {
         if (urlBase.equals("http://10.10.8.4/dcmobile2/")) {
             urlBase =
                     urlBase.concat(
@@ -274,24 +240,27 @@ public class JobBossClient {
     }
 
     // TODO: test opStart
-    public String opStart(Employee emp, String operationId) throws Exception {
+    private String opStart(Employee emp, String operationId) throws Exception {
         return postRequest(
                 startFormParams(getPageContent(OPERATION_START), emp, operationId), OPERATION_START);
     }
 
-    // TODO: Fix opStop
-    public String opStop(Transaction transaction, StopForm form) throws Exception {
-        return postRequest(stopFormParams(getPageContent("/" + transaction.getTransactionPath()), form), "/" + transaction.getTransactionPath());
-    }
+   /* // TODO: Fix opStop
+    private String opStop(Employee emp, StopForm form) throws Exception {
+        System.out.println(emp.getTransactionPath(form.getOperationId()));
+        return postRequest(stopFormParams(getPageContent("/" + emp.getTransactionPath(form.getOperationId())), emp, form), "/" + emp.getTransactionPath(form.getOperationId()));
+    }*/
 
-    public String clockInAndOut(Employee emp) throws Exception {
-        return postRequest(defaultFormParams(getPageContent(HOME), emp), HOME);
-    }
+/*
+  private String clockInAndOut(Employee emp) throws Exception {
+    return postRequest(defaultFormParams(getPageContent(HOME), emp), HOME);
+  }
+*/
 
     /**
      * Grabs the form input names and values from the DEFAULT page.
      */
-    private String defaultFormParams(String html, Employee emp) throws UnsupportedEncodingException {
+    private void defaultFormParams(String html, Employee emp) throws UnsupportedEncodingException {
         Document doc = Jsoup.parse(html);
 
         Elements inputElements = doc.getElementsByTag("input");
@@ -344,12 +313,10 @@ public class JobBossClient {
 
         try {
             Response response = client.newCall(request).execute();
-            return response.toString();
+            // Do something with the response.
         } catch (IOException e) {
             e.printStackTrace();
-            return "";
         }
-
     }
 
     private String startFormParams(String html, Employee emp, String operationId) throws UnsupportedEncodingException {
@@ -412,7 +379,7 @@ public class JobBossClient {
         return result.toString();
     }
 
-    private String stopFormParams(String html, StopForm stopForm) throws UnsupportedEncodingException {
+    private String stopFormParams(String html, Employee emp, StopForm stopForm) throws UnsupportedEncodingException {
         Document doc = Jsoup.parse(html);
 
         Elements inputElements = doc.getElementsByTag("input");
@@ -600,8 +567,10 @@ public class JobBossClient {
     }
 
     private void parseRoutes(Job job, Elements elements) {
+        //System.out.println("||OPERATION||");
         Operation op = new Operation();
         for (int i = 0; i < elements.size(); i++) {
+            //System.out.println(elements.get(i).text());
             switch (i) {
                 case 0:
                     op.setOperationNumber(elements.get(i).text());
@@ -649,6 +618,7 @@ public class JobBossClient {
                 case 11:
                     op.setRunMethod(elements.get(i).text());
                     break;
+
             }
         }
         job.addOperation(op);

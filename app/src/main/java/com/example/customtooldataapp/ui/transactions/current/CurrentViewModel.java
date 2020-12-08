@@ -21,12 +21,12 @@ public class CurrentViewModel extends ViewModel {
 
     public LiveData<List<Transaction>> getTransactions() {
         Log.d("CurrentViewModel", "getTransactions()");
-        if(transactionsRepository.getTransactions().getValue() == null){
+        if(transactionsRepository.getCurrentTransactions().getValue() == null){
             Log.d("CurrentViewModel", "Transactions are null...");
         }else{
-            Log.d("CurrentViewModel", "Size: " +  transactionsRepository.getTransactions().getValue().size());
+            Log.d("CurrentViewModel", "Size: " +  transactionsRepository.getCurrentTransactions().getValue().size());
         }
-        return transactionsRepository.getTransactions();
+        return transactionsRepository.getCurrentTransactions();
     }
 }
 

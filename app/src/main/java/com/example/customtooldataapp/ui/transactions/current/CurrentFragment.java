@@ -15,12 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.adapters.TransactionRecyclerAdapter;
-import com.example.customtooldataapp.model.Transaction;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.example.customtooldataapp.adapters.RecyclerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,7 +25,7 @@ import java.util.List;
 public class CurrentFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private TransactionRecyclerAdapter transactionRecyclerAdapter;
+    private RecyclerAdapter recyclerAdapter;
 
     public CurrentFragment() {
         // Required empty public constructor
@@ -55,17 +50,17 @@ public class CurrentFragment extends Fragment {
         super.onCreate(savedInstanceState);
         CurrentViewModel model = new ViewModelProvider(requireActivity()).get(CurrentViewModel.class);
         Log.d("CurrentFragment", "...Creating Adapter");
-        transactionRecyclerAdapter = new TransactionRecyclerAdapter(this, model.getTransactions().getValue());
+        recyclerAdapter = new RecyclerAdapter(this, model.getTransactions());
         model.getTransactions().observe(this, transactions -> {
             Log.d("CurrentFragment", "...Updating Adapter");
-            transactionRecyclerAdapter = new TransactionRecyclerAdapter(this, transactions);
+            recyclerAdapter.notifyDataSetChanged();
         });
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         recyclerView = getView().findViewById(R.id.current_recycler);
-        recyclerView.setAdapter(transactionRecyclerAdapter);
+        recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         super.onViewCreated(view, savedInstanceState);
     }

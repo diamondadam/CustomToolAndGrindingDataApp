@@ -22,47 +22,61 @@ import java.util.List;
 
 public class TransactionsRepository {
     private static TransactionsRepository instance;
+    private final Employee employee;
     private JobBossClient jobBossClient;
-    private MutableLiveData<List<Transaction>> transactions;
-    private Employee employee;
+    private MutableLiveData<List<Transaction>> currentTransactions;
+    private MutableLiveData<List<Transaction>> pastTransactions;
+
 
     public static TransactionsRepository getInstance() {
         if (instance == null) {
             Log.d("TransactionsRepository", "Singleton Create");
             instance = new TransactionsRepository();
         }
-        Log.d("TransactionsRepository", "Singleton Get");
         return instance;
     }
 
     private TransactionsRepository() {
+        employee = Employee.getInstance();
         Log.d("TransactionsRepository", "Initializing JBC");
 
-        transactions = new MutableLiveData<>();
+        currentTransactions = new MutableLiveData<>();
+        pastTransactions = new MutableLiveData<>();
+
         Log.d("TransactionsRepository", "Requesting Transactions...");
         Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
-                    jobBossClient = JobBossClient.getInstance();
-                    transactions.postValue(jobBossClient.getTransactions());
+                    jobBossClient = new JobBossClient();
+                    jobBossClient.init(employee);
+                    List<Transaction> currentTemp = new ArrayList<>();
+                    List<Transaction> pastTemp = new ArrayList<>();
+                    for(Transaction transaction: jobBossClient.getTransactions(employee)){
+                        if(transaction.getLogout().equals("No")){
+                            currentTemp.add(transaction);
+                        }else{
+                            pastTemp.add(transaction);
+                        }
+                    }
+                    currentTransactions.postValue(currentTemp);
+                    pastTransactions.postValue(pastTemp);
                 } catch (Exception e) {
                     Log.d("TransactionsRepository", "Exception...");
-                    Log.d("TransactionsRepository", e.getMessage());
                 }
             }
         };
         thread.start();
-        if(transactions.getValue() == null){
-            Log.d("TransactionsRepository", "Transactions are null...");
-        }else{
-            Log.d("TransactionsRepository", "Size: " + transactions.getValue().size());
-        }
     }
 
-    public LiveData<List<Transaction>> getTransactions() {
-        Log.d("TransactionsRepository", "getTransactions()");
-        return transactions;
+    public LiveData<List<Transaction>> getCurrentTransactions() {
+        Log.d("TransactionsRepository", "getCurrentTransactions()");
+        return currentTransactions;
+    }
+
+    public LiveData<List<Transaction>> getPastTransactions(){
+        Log.d("TransactionsRepository", "getPastTransactions()");
+        return pastTransactions;
     }
 
 }

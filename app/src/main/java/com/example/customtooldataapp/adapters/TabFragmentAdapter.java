@@ -12,9 +12,9 @@ import com.example.customtooldataapp.ui.transactions.current.CurrentFragment;
 import com.example.customtooldataapp.ui.error.NoConnectionFragment;
 import com.example.customtooldataapp.ui.transactions.past.PastFragment;
 
-public class ViewPagerFragmentAdapter extends FragmentStateAdapter {
+public class TabFragmentAdapter extends FragmentStateAdapter {
 
-    public ViewPagerFragmentAdapter(@NonNull FragmentManager fragmentManager, Lifecycle lifecycle) {
+    public TabFragmentAdapter(@NonNull FragmentManager fragmentManager, Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
     }
 
