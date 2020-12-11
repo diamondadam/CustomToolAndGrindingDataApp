@@ -16,15 +16,10 @@ import android.view.ViewGroup;
 
 import com.example.customtooldataapp.R;
 import com.example.customtooldataapp.adapters.RecyclerAdapter;
+import com.example.customtooldataapp.ui.transactions.current.CurrentViewModel;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PastFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class PastFragment extends Fragment {
 
-    private RecyclerView recyclerView;
     private RecyclerAdapter recyclerAdapter;
 
     public PastFragment() {
@@ -32,24 +27,17 @@ public class PastFragment extends Fragment {
         Log.d("PastFragment", "Constructor");
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment PastFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static PastFragment newInstance() {
-        PastFragment fragment = new PastFragment();
-        return fragment;
+        return new PastFragment();
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d("PastFragment", "onCreate");
         super.onCreate(savedInstanceState);
-        PastViewModel model = new ViewModelProvider(this).get(PastViewModel.class);
-        Log.d("CurrentFragment", "...Creating Adapter");
+        PastViewModel model = new ViewModelProvider(requireActivity()).get(PastViewModel.class);
+        Log.d("PastFragment", "...Creating Adapter");
         recyclerAdapter = new RecyclerAdapter(this, model.getTransactions());
         model.getTransactions().observe(this, transactions -> {
             Log.d("PastFragment", "...Updating Adapter");
@@ -58,19 +46,17 @@ public class PastFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        RecyclerView recyclerView = getView().findViewById(R.id.past_recycler);
+        recyclerView.setAdapter(recyclerAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_past, container, false);
     }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        recyclerView = getView().findViewById(R.id.past_recycler);
-        recyclerView.setAdapter(recyclerAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        super.onViewCreated(view, savedInstanceState);
-    }
-
 }

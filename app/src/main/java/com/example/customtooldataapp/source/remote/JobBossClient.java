@@ -1,6 +1,7 @@
 package com.example.customtooldataapp.source.remote;
 
 import android.util.Log;
+import android.util.Pair;
 
 import com.example.customtooldataapp.model.Employee;
 import com.example.customtooldataapp.model.Job;
@@ -57,15 +58,18 @@ public class JobBossClient {
     private HttpURLConnection conn;
     private String urlBase = "http://10.10.8.4/dcmobile2/";
 
+    private String employeeId;
+
+    public JobBossClient(String employeeId){this.employeeId = employeeId;}
 
     /**
      * This method establishes the initial connection with the server.
      */
-    public void init(Employee emp) throws Exception {
+    public void init() throws Exception {
         // Establishes session and verifies user.
-        try{
+        try {
             defaultFormParams(getPageContent(""), emp);
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d("JBC init", e.toString());
         }
 
@@ -173,8 +177,9 @@ public class JobBossClient {
     /**
      * Obtains the entry parameters, and job identification number
      */
-    public List<Transaction> getTransactions(Employee emp) throws Exception {
+    public List<Transaction> getTransactions() throws Exception {
         List<Transaction> transactions = new ArrayList<>();
+        Transaction singleTransaction;
 
         Document doc = Jsoup.parse(getPageContent(JOB_ENTRIES));
         Elements links = doc.getElementsByAttribute("href");
@@ -183,15 +188,21 @@ public class JobBossClient {
             // Move through all the links and find the entry routes
             String link = elem.attr("href");
             if (link.contains("OpStop.aspx")) {
-                transactions.add(new Transaction(link, elem.text()));
+                //Set jobId and create Transaction
+                String jobId = elem.text();
+                singleTransaction = new Transaction(link);
+                String operationId = singleTransaction.getOperationId();
                 // Get job data
-                getJob(getPageContent(JOB_DETAILS.concat("?id=" + elem.text())), emp, elem.text());
+                String html = getPageContent(JOB_DETAILS.concat("?id=" + elem.text()));
+                Pair<Job, Operation> pair = getData(html, jobId, operationId);
+                singleTransaction.setJob(pair.first);
+                singleTransaction.setOperation(pair.second);
             }
         }
         return transactions;
     }
 
-    private void getJob(String html, Employee emp, String jobId) throws ParseException {
+    private Pair<Job, Operation> getData(String html, String jobId, String operationId) throws ParseException {
 
         Job job = new Job(jobId);
         Document doc = Jsoup.parse(html);
@@ -214,18 +225,28 @@ public class JobBossClient {
         parseQtyData(job, qtyData);
         parseCustomerData(job, customerData);
 
+        Operation operation = new Operation(operationId);
+
         if (routes.size() > 0) {
             for (Element elem : routes) {
-                parseRoutes(job, elem.getElementsByTag("td"));
+                //Check for the transactions operation ONLY
+                if(elem.getElementsByTag("td").get(0).text().equals(operationId)){
+                    parseRoutes(elem.getElementsByTag("td"), operation);
+                }
             }
         }
         if (picks.size() > 0) {
-            //parsePicks(job, picks.get(0).getElementsByTag("td"));
+            try {
+                parsePicks(job, picks.get(0).getElementsByTag("td"));
+            }catch (Exception e){
+                Log.d("JBC", e.toString());
+            }
+
         }
         if (buys.size() > 0) {
             parseBuys(job, buys.get(0).getElementsByTag("td"));
         }
-        emp.addJob(job);
+        return new Pair<>(job, operation);
     }
 
     /**
@@ -566,11 +587,8 @@ public class JobBossClient {
         }
     }
 
-    private void parseRoutes(Job job, Elements elements) {
-        //System.out.println("||OPERATION||");
-        Operation op = new Operation();
+    private Operation parseRoutes(Elements elements, Operation op) {
         for (int i = 0; i < elements.size(); i++) {
-            //System.out.println(elements.get(i).text());
             switch (i) {
                 case 0:
                     op.setOperationNumber(elements.get(i).text());
@@ -584,7 +602,7 @@ public class JobBossClient {
                     break;
 
                 case 3:
-                    op.setDescription(elements.get(i).text());
+                    op.setOperationDescription(elements.get(i).text());
                     break;
 
                 case 4:
@@ -621,7 +639,7 @@ public class JobBossClient {
 
             }
         }
-        job.addOperation(op);
+        return op;
     }
 
     private void parsePicks(Job job, Elements elements) {

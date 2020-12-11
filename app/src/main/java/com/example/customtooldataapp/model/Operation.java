@@ -5,7 +5,7 @@ public class Operation {
     private String operationNumber;
     private String wcVendor;
     private String opName;
-    private String description;
+    private String operationDescription;
     private String scheduledStart;
     private String status;
     private String runMethod;
@@ -15,6 +15,10 @@ public class Operation {
     private float remainingSetupTime;
     private float setupTime;
     private float runtime;
+
+    public Operation(String operationNumber) {
+        this.operationNumber = operationNumber;
+    }
 
     public String getOperationNumber() {
         return operationNumber;
@@ -38,14 +42,6 @@ public class Operation {
 
     public void setOpName(String opName) {
         this.opName = opName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getScheduledStart() {
@@ -118,5 +114,13 @@ public class Operation {
 
     public void setRuntime(float runtime) {
         this.runtime = runtime;
+    }
+
+    public String getOperationDescription() {
+        return operationDescription;
+    }
+
+    public void setOperationDescription(String operationDescription) {
+        this.operationDescription = operationDescription;
     }
 }

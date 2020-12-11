@@ -32,9 +32,9 @@ public class NameFragment extends Fragment {
     public static NameFragment newInstance(Transaction transaction) {
         NameFragment fragment = new NameFragment();
         Bundle args = new Bundle();
-        args.putString("Job Name", transaction.getJobName());
+        args.putString("Job Name", transaction.getJob().getJobName());
         args.putString("Operation Name", transaction.getOperationName());
-        args.putString("JobId", transaction.getJobId());
+        args.putString("JobId", transaction.getJob().getJobName());
         args.putString("OperationId", transaction.getOperationId());
         fragment.setArguments(args);
         return fragment;

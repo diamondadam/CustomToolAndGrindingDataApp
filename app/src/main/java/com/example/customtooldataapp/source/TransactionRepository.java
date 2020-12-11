@@ -1,5 +1,6 @@
 package com.example.customtooldataapp.source;
 
+import android.app.Application;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -7,6 +8,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.customtooldataapp.model.Employee;
 import com.example.customtooldataapp.model.Transaction;
+import com.example.customtooldataapp.source.local.TransactionDao;
+import com.example.customtooldataapp.source.local.TransactionRoomDatabase;
 import com.example.customtooldataapp.source.remote.JobBossClient;
 
 import java.util.ArrayList;
@@ -20,24 +23,40 @@ import java.util.List;
     emp.addTransaction(transactionLink2, "88888");
     */
 
-public class TransactionsRepository {
-    private static TransactionsRepository instance;
-    private final Employee employee;
+public class TransactionRepository {
+    private static TransactionRepository instance;
     private JobBossClient jobBossClient;
-    private MutableLiveData<List<Transaction>> currentTransactions;
-    private MutableLiveData<List<Transaction>> pastTransactions;
+    private LiveData<List<Transaction>> currentTransactions;
+    private LiveData<List<Transaction>> pastTransactions;
 
-
-    public static TransactionsRepository getInstance() {
-        if (instance == null) {
-            Log.d("TransactionsRepository", "Singleton Create");
-            instance = new TransactionsRepository();
-        }
-        return instance;
+    private TransactionDao transactionDao;
+    
+    public TransactionRepository(Application application){
+        TransactionRoomDatabase db = TransactionRoomDatabase.getDatabase(application);
+        transactionDao = db.transactionDao();
+        currentTransactions = transactionDao.loadTransactions("Yes");
+        pastTransactions = transactionDao.loadTransactions("No");
     }
 
-    private TransactionsRepository() {
-        employee = Employee.getInstance();
+    void insert(Transaction transaction){
+        TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
+            transactionDao.insert(transaction);
+        });
+    }
+
+    public LiveData<List<Transaction>> getCurrentTransactions() {
+        Log.d("TransactionsRepository", "getCurrentTransactions()");
+        return currentTransactions;
+    }
+
+    public LiveData<List<Transaction>> getPastTransactions(){
+        Log.d("TransactionsRepository", "getPastTransactions()");
+        return pastTransactions;
+    }
+
+
+/*
+    private TransactionRepository() {
         Log.d("TransactionsRepository", "Initializing JBC");
 
         currentTransactions = new MutableLiveData<>();
@@ -49,10 +68,10 @@ public class TransactionsRepository {
             public void run() {
                 try {
                     jobBossClient = new JobBossClient();
-                    jobBossClient.init(employee);
+                    jobBossClient.init();
                     List<Transaction> currentTemp = new ArrayList<>();
                     List<Transaction> pastTemp = new ArrayList<>();
-                    for(Transaction transaction: jobBossClient.getTransactions(employee)){
+                    for(Transaction transaction: jobBossClient.getTransactions()){
                         if(transaction.getLogout().equals("No")){
                             currentTemp.add(transaction);
                         }else{
@@ -68,15 +87,8 @@ public class TransactionsRepository {
         };
         thread.start();
     }
+*/
 
-    public LiveData<List<Transaction>> getCurrentTransactions() {
-        Log.d("TransactionsRepository", "getCurrentTransactions()");
-        return currentTransactions;
-    }
 
-    public LiveData<List<Transaction>> getPastTransactions(){
-        Log.d("TransactionsRepository", "getPastTransactions()");
-        return pastTransactions;
-    }
 
 }

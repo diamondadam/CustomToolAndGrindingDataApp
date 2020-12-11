@@ -1,32 +1,30 @@
 package com.example.customtooldataapp.ui.transactions.current;
 
+import android.app.Application;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.customtooldataapp.model.Transaction;
-import com.example.customtooldataapp.source.TransactionsRepository;
+import com.example.customtooldataapp.source.TransactionRepository;
 
 import java.util.List;
 
 public class CurrentViewModel extends ViewModel {
 
-    private final TransactionsRepository transactionsRepository;
+    private TransactionRepository transactionsRepository;
+    private final LiveData<List<Transaction>> transactions;
 
-    public CurrentViewModel() {
+    public CurrentViewModel(Application application) {
         Log.d("CurrentViewModel", "Constructor");
-        transactionsRepository = TransactionsRepository.getInstance();
+        transactionsRepository = new TransactionRepository(application);
+        transactions = transactionsRepository.getCurrentTransactions();
     }
 
     public LiveData<List<Transaction>> getTransactions() {
         Log.d("CurrentViewModel", "getTransactions()");
-        if(transactionsRepository.getCurrentTransactions().getValue() == null){
-            Log.d("CurrentViewModel", "Transactions are null...");
-        }else{
-            Log.d("CurrentViewModel", "Size: " +  transactionsRepository.getCurrentTransactions().getValue().size());
-        }
-        return transactionsRepository.getCurrentTransactions();
+        return transactions;
     }
 }
 

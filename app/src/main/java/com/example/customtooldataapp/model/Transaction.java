@@ -1,48 +1,68 @@
 package com.example.customtooldataapp.model;
 
-import androidx.lifecycle.LiveData;
+import androidx.annotation.NonNull;
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 
+@Entity(tableName = "transaction_table")
 public class Transaction {
+
     // Key id is the same as the operation number for the operation...
     // Job id is created when transaction is
-    //
+
+    @PrimaryKey
+    @NonNull
+    private String tranID;
     private String transactionPath;
     private String tranType;
-    private String tranID;
     private String logout;
     private String keyID;
-    private Employee employee;
-    private String jobId = "94937";
-    private String jobName = "SM-20201029";
-    private String operationName = "PWR010-025";
 
-    public Transaction(String path, String jobId) {
+    private String operationName;
+
+    @Embedded
+    private Job job;
+
+    @Embedded
+    private Operation operation;
+
+    public Transaction(){}
+
+    public Transaction(String path) {
         this.transactionPath = path;
-        this.jobId = jobId;
-        this.employee = Employee.getInstance();
         parsePath(path);
     }
 
-    private void parsePath(String path){
+    public void setOperationName(String operationName) {
+        this.operationName = operationName;
+    }
+
+    public Job getJob() {
+        return job;
+    }
+
+    public void setJob(Job job) {
+        this.job = job;
+    }
+
+    public Operation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(Operation operation) {
+        this.operation = operation;
+    }
+
+
+    private void parsePath(String path) {
 
         this.tranType = path.split("&", 4)[0].replace("OpStop.aspx?tranType=", "");
         this.tranID = path.split("&", 4)[2].replace("tranID=", "");
         this.logout = path.split("&", 4)[3].replace("logOut=", "");
         this.keyID = path.split("&", 4)[1].replace("keyID=", "");
-    }
-
-    public Job getJob() {
-        return employee.getJob(jobId);
-    }
-
-    public Operation getOperation() {
-        return employee.getJob(jobId).getOperation(keyID);
-    }
-
-    public String getJobName() {
-        return jobName;
     }
 
     public String getOperationName() {
@@ -72,14 +92,6 @@ public class Transaction {
     @Override
     public int hashCode() {
         return Objects.hash(transactionPath, tranType, tranID, logout, keyID);
-    }
-
-    public String getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(String jobId) {
-        this.jobId = jobId;
     }
 
     public String getTransactionPath() {

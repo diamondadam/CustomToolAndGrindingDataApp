@@ -24,7 +24,6 @@ import com.example.customtooldataapp.adapters.RecyclerAdapter;
  */
 public class CurrentFragment extends Fragment {
 
-    private RecyclerView recyclerView;
     private RecyclerAdapter recyclerAdapter;
 
     public CurrentFragment() {
@@ -32,16 +31,8 @@ public class CurrentFragment extends Fragment {
         Log.d("PastFragment", "Constructor");
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment CurrentFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static CurrentFragment newInstance() {
-        CurrentFragment fragment = new CurrentFragment();
-        return fragment;
+        return new CurrentFragment();
     }
 
     @Override
@@ -59,7 +50,7 @@ public class CurrentFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        recyclerView = getView().findViewById(R.id.current_recycler);
+        RecyclerView recyclerView = getView().findViewById(R.id.current_recycler);
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         super.onViewCreated(view, savedInstanceState);

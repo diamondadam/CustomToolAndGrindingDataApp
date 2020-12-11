@@ -2,19 +2,16 @@ package com.example.customtooldataapp.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+
 import java.util.Locale;
 
 public class Job {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-
     private String jobId;
+
     // Job Data tab
-    private Date orderDate;
-    private Date nextDeliveryDate;
+    private String orderDate;
+    private String nextDeliveryDate;
     private String jobName;
     private String description;
     private String drawing;
@@ -32,8 +29,7 @@ public class Job {
     private String poLine;
     private String shipTo;
     private String address;
-    // Routings Data
-    private HashMap<String, Operation> operations = new HashMap<>();
+
     // Pick or Buy
     private String materialRequisition;
     private String material;
@@ -43,16 +39,24 @@ public class Job {
     private String pickStatus;
     private String notes;
 
-    public Operation getOperation(String operationId) {
-        return operations.get(operationId);
-    }
-
-    public void addOperation(Operation operation){
-        operations.put(operation.getOperationNumber(), operation);
-    }
-
     public Job(String jobId) {
         this.jobId = jobId;
+    }
+
+    public String getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(String orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getNextDeliveryDate() {
+        return nextDeliveryDate;
+    }
+
+    public void setNextDeliveryDate(String nextDeliveryDate) {
+        this.nextDeliveryDate = nextDeliveryDate;
     }
 
     public String getJobId() {
@@ -61,31 +65,6 @@ public class Job {
 
     public void setJobId(String jobId) {
         this.jobId = jobId;
-    }
-
-    public String getOrderDate() {
-        return dateFormat.format(orderDate);
-    }
-
-    public void setOrderDate(String orderDate) {
-        try {
-            this.orderDate = dateFormat.parse(orderDate);
-        } catch (ParseException e) {
-            this.orderDate = null;
-        }
-    }
-
-    public String getNextDeliveryDate() {
-        return dateFormat.format(nextDeliveryDate);
-    }
-
-    public void setNextDeliveryDate(String nextDeliveryDate) {
-        try {
-            this.nextDeliveryDate = dateFormat.parse(nextDeliveryDate);
-        } catch (ParseException e) {
-            this.orderDate = null;
-            //TODO log
-        }
     }
 
     public String getJobName() {
