@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,7 @@ public class NameFragment extends Fragment {
         NameFragment fragment = new NameFragment();
         Bundle args = new Bundle();
         args.putString("Job Name", transaction.getJob().getJobName());
-        args.putString("Operation Name", transaction.getOperationName());
+        args.putString("Operation Name", transaction.getOperation().getOpName());
         args.putString("JobId", transaction.getJob().getJobName());
         args.putString("OperationId", transaction.getOperationId());
         fragment.setArguments(args);
@@ -60,6 +61,9 @@ public class NameFragment extends Fragment {
         TextView operationNameWidget = layout.findViewById(R.id.OperationName);
         TextView jobIdWidget = layout.findViewById(R.id.JobId);
         TextView operationIdWidget = layout.findViewById(R.id.OperationId);
+
+        Log.d("JobName: ", jobName);
+        Log.d("OperationName: ", operationName);
 
         jobNameWidget.setText(jobName);
         operationNameWidget.setText(operationName);

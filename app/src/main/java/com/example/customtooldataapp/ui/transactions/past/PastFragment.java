@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import com.example.customtooldataapp.R;
 import com.example.customtooldataapp.adapters.RecyclerAdapter;
 import com.example.customtooldataapp.ui.transactions.current.CurrentViewModel;
+import com.example.customtooldataapp.ui.transactions.current.CurrentViewModelFactory;
 
 public class PastFragment extends Fragment {
 
@@ -36,7 +37,7 @@ public class PastFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.d("PastFragment", "onCreate");
         super.onCreate(savedInstanceState);
-        PastViewModel model = new ViewModelProvider(requireActivity()).get(PastViewModel.class);
+        PastViewModel model = new ViewModelProvider(this, new PastViewModelFactory(this.getActivity().getApplication())).get(PastViewModel.class);
         Log.d("PastFragment", "...Creating Adapter");
         recyclerAdapter = new RecyclerAdapter(this, model.getTransactions());
         model.getTransactions().observe(this, transactions -> {

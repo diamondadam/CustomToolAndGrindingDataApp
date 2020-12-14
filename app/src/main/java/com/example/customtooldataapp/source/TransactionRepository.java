@@ -14,6 +14,7 @@ import com.example.customtooldataapp.source.remote.JobBossClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.LongFunction;
 
 /*  String transactionLink = "";
     String transactionLink1 = "";
@@ -30,15 +31,60 @@ public class TransactionRepository {
     private LiveData<List<Transaction>> pastTransactions;
 
     private TransactionDao transactionDao;
-    
+
+    public static TransactionRepository getInstance(Application application){
+        if(instance == null){
+            instance = new TransactionRepository(application);
+        }
+        return instance;
+    }
+
     public TransactionRepository(Application application){
         TransactionRoomDatabase db = TransactionRoomDatabase.getDatabase(application);
         transactionDao = db.transactionDao();
+        jobBossClient = new JobBossClient("0163");
+        Log.d("TransactionRepository", "Populating transactions...");
+        TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
+            Log.d("DatabaseExecutor", "Populating transactions...");
+            transactionDao.insertList(jobBossClient.populateTransactions());
+            Log.d("DatabaseExecutor", "Complete...");
+            Log.d("DatabaseExecutor", "Size..." + transactionDao.selectAll().size());
+            for (Transaction transaction: transactionDao.selectAll()){
+                Log.d("DatabaseExecutor",  transaction.toString());
+            }
+        });
+        Log.d("TransactionRepository", "Loading transactions...");
         currentTransactions = transactionDao.loadTransactions("Yes");
         pastTransactions = transactionDao.loadTransactions("No");
     }
 
-    void insert(Transaction transaction){
+    public  void syncDatabases(){
+        Log.d("syncDatabases()", "Starting Executor...");
+        TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
+            List<Transaction> transactions = jobBossClient.populateNewTransactions();
+            List<Transaction> databaseTransactions = transactionDao.selectAll();
+
+            for (Transaction transaction: databaseTransactions){
+                if(!transactions.contains(transaction)){
+                    //If the transaction is no longer in the remote database remove it from local
+                    transactionDao.deleteOne(transaction.getTranID());
+                }
+            }
+
+            for (Transaction transaction: transactions){
+                if(!databaseTransactions.contains(transaction)){
+                    //If transaction is in remote database but not local insert it.
+                    TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
+                        transactionDao.insert(transaction);
+                    });
+                }
+            }
+        });
+        currentTransactions = transactionDao.loadTransactions("Yes");
+        pastTransactions = transactionDao.loadTransactions("No");
+    }
+
+    public void insert(Transaction transaction){
         TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
             transactionDao.insert(transaction);
         });
@@ -53,42 +99,4 @@ public class TransactionRepository {
         Log.d("TransactionsRepository", "getPastTransactions()");
         return pastTransactions;
     }
-
-
-/*
-    private TransactionRepository() {
-        Log.d("TransactionsRepository", "Initializing JBC");
-
-        currentTransactions = new MutableLiveData<>();
-        pastTransactions = new MutableLiveData<>();
-
-        Log.d("TransactionsRepository", "Requesting Transactions...");
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    jobBossClient = new JobBossClient();
-                    jobBossClient.init();
-                    List<Transaction> currentTemp = new ArrayList<>();
-                    List<Transaction> pastTemp = new ArrayList<>();
-                    for(Transaction transaction: jobBossClient.getTransactions()){
-                        if(transaction.getLogout().equals("No")){
-                            currentTemp.add(transaction);
-                        }else{
-                            pastTemp.add(transaction);
-                        }
-                    }
-                    currentTransactions.postValue(currentTemp);
-                    pastTransactions.postValue(pastTemp);
-                } catch (Exception e) {
-                    Log.d("TransactionsRepository", "Exception...");
-                }
-            }
-        };
-        thread.start();
-    }
-*/
-
-
-
 }

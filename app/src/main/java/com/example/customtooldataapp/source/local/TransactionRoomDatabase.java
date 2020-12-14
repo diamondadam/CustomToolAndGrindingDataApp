@@ -11,7 +11,7 @@ import com.example.customtooldataapp.model.Transaction;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Transaction.class}, version = 1, exportSchema = true)
+@Database(entities = {Transaction.class}, version = 1, exportSchema = false)
 public abstract class TransactionRoomDatabase extends RoomDatabase {
 
     public abstract TransactionDao transactionDao();

@@ -6,8 +6,6 @@
     android:layout_width="wrap_content"
     android:layout_height="100dp"
     android:layout_margin="5dp"
-    android:background="@drawable/transaction_bg"
-    android:foreground="@drawable/transaction_fg"
 
     android:elevation="15dp"
     android:padding="5dp">

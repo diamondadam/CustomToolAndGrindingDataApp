@@ -2,6 +2,7 @@ package com.example.customtooldataapp.source.remote;
 
 import android.util.Log;
 import android.util.Pair;
+import android.webkit.WebView;
 
 import com.example.customtooldataapp.model.Employee;
 import com.example.customtooldataapp.model.Job;
@@ -44,16 +45,7 @@ public class JobBossClient {
     private static final String HOME = "/Home.aspx";
     private static final String DEFAULT = "/Default.aspx";
     private static final String JOB_ENTRIES = "/JobEntries.aspx";
-    private static final String GROUP_ENTRIES = "/GroupEntries.aspx";
-    private static final String OPERATION_START = "/OperationStart.aspx";
-    private static final String JOB_START = "/JobStart.aspx";
-    private static final String GROUP_START = "/GroupStart.aspx";
-    private static final String ELAPSED_TIME = "/ElapsedTime.aspx";
-    private static final String ELAPSED_TIME_BY_JOB = "ElapsedTimebyJob.aspx";
-    private static final String ISSUE_REQ = "/IssueReq.aspx";
-    private static final String PICK_BY_JOB = "/PickByJob.aspx";
     private static final String JOB_DETAILS = "/JobDetails.aspx";
-    private static final String OP_STOP = "OpStop.aspx";
     private List<HttpCookie> cookieList;
     private HttpURLConnection conn;
     private String urlBase = "http://10.10.8.4/dcmobile2/";
@@ -63,16 +55,276 @@ public class JobBossClient {
     public JobBossClient(String employeeId){this.employeeId = employeeId;}
 
     /**
-     * This method establishes the initial connection with the server.
+     * Obtains the entry parameters, and job identification number
      */
-    public void init() throws Exception {
-        // Establishes session and verifies user.
-        try {
-            defaultFormParams(getPageContent(""), emp);
-        } catch (Exception e) {
-            Log.d("JBC init", e.toString());
+
+    public List<Transaction> populateTransactions(){
+        Log.d("populateTransaction()", "Creating Transactions...");
+        List<Transaction> transactions = new ArrayList<>();
+
+        for(int i = 0; i < 10; i++){
+            //String path = "OpStop.aspx?tranType=&tranID=&logOut=&keyID=";
+            int trantype = 10 + (i % 2);
+
+            String tranId = "5AE-6778-SH234-" + i ;
+
+            String logout;
+            if(i % 2 == 0){
+                logout = "Yes";
+            }else{
+                logout = "No";
+            }
+
+            int keyId = 217000 + i;
+            //OpStop.aspx?tranType=10&keyID=217000&tranID=5AE-6778-SH234-0&logOut=Yes
+            StringBuilder stringBuilder = new StringBuilder("OpStop.aspx?tranType=");
+            stringBuilder.append(trantype)
+                    .append("&keyID=").append(keyId)
+                    .append("&tranID=").append(tranId)
+                    .append("&logOut=").append(logout);
+
+            Log.d("Path", stringBuilder.toString());
+            Transaction transaction = new Transaction(stringBuilder.toString());
+
+            Job job = new Job("99500" + i);
+            job.setJobName("SM-2017000" + i);
+            job.setInProductionQty(8);
+            job.setCompletedQty(2);
+            job.setMakeQty(10);
+            job.setCustomer("Structure Medical");
+            job.setAddress("Somewhere in Florida");
+            job.setDescription("Ridiculous boring bar");
+            job.setOrderDate("12/12/2020");
+            job.setQtyRequired(10);
+            job.setShippedQty(0);
+
+            Operation operation = new Operation(String.valueOf(keyId));
+            operation.setFloorNotes("Can't run in mini");
+            operation.setOpName("PWR-060");
+            operation.setQtyCompleted(2);
+            operation.setRemainingRuntime(1);
+            operation.setRemainingSetupTime(1);
+
+            transaction.setJob(job);
+            transaction.setOperation(operation);
+
+            transactions.add(transaction);
+        }
+        Log.d("populateTransaction()", "Returning Transactions...");
+        Log.d("populateTransaction()", "Size: " + transactions.size());
+
+        return transactions;
+    }
+    public List<Transaction> populateNewTransactions(){
+        List<Transaction> transactions = new ArrayList<>();
+        for(int i = 0; i < 10; i++){
+            //String path = "OpStop.aspx?tranType=&tranID=&logOut=&keyID=";
+            int trantype = 10 + (i % 2);
+
+            String tranId = "5AE-6778-SH234-" + i ;
+
+            String logout;
+            if(i % 2 == 0){
+                logout = "Yes";
+            }else{
+                logout = "No";
+            }
+
+            int keyId = 291000 + i;
+
+            StringBuilder stringBuilder = new StringBuilder("OpStop.aspx?tranType=");
+            stringBuilder.append(trantype)
+                    .append("&keyID=").append(keyId)
+                    .append("&tranID=").append(tranId)
+                    .append("&logOut=").append(logout);
+
+            Transaction transaction = new Transaction(stringBuilder.toString());
+
+            Job job = new Job("58500" + i);
+            job.setJobName("MSC-T16" + i);
+            job.setInProductionQty(8);
+            job.setCompletedQty(2);
+            job.setMakeQty(10);
+            job.setCustomer("Structure Medical");
+            job.setAddress("Somewhere in Florida");
+            job.setDescription("Ridiculous boring bar");
+            job.setOrderDate("12/12/2020");
+            job.setQtyRequired(10);
+            job.setShippedQty(0);
+
+            Operation operation = new Operation(String.valueOf(keyId));
+            operation.setFloorNotes("Can't run in mini");
+            operation.setOpName("PWR-060");
+            operation.setQtyCompleted(2);
+            operation.setRemainingRuntime(1);
+            operation.setRemainingSetupTime(1);
+
+            transaction.setJob(job);
+            transaction.setOperation(operation);
+
+            transactions.add(transaction);
+        }
+        return transactions;
+    }
+    public List<Transaction> getTransactions() {
+        initLogin();
+        List<Transaction> transactions = new ArrayList<>();
+        Transaction singleTransaction;
+
+        Document document;
+
+        try{
+            document = Jsoup.parse(getPageContent(JOB_ENTRIES));
+        }catch (Exception e){
+            Log.d("getTransactions", e.toString());
+            return transactions;
         }
 
+        Elements links = document.getElementsByAttribute("href");
+
+        for (Element elem : links) {
+            // Move through all the links and find the entry routes
+            String link = elem.attr("href");
+            if (link.contains("OpStop.aspx")) {
+                //Set jobId and create Transaction
+                String jobId = elem.text();
+                singleTransaction = new Transaction(link);
+                String operationId = singleTransaction.getOperationId();
+                Pair<Job, Operation> pair;
+
+                //Try to get job data returns if there is an error
+                try{
+                    pair = getJobData(getPageContent(JOB_DETAILS.concat("?id=" + elem.text())), jobId, operationId);
+                }catch (Exception e){
+                    Log.d("getTransactions", e.toString());
+                    return transactions;
+                }
+
+                // Get job data
+                singleTransaction.setJob(pair.first);
+                singleTransaction.setOperation(pair.second);
+            }
+        }
+        return transactions;
+    }
+
+    //TODO: create operation to get the login status
+    public String getLoginStatus(){
+        return "Placeholder";
+    }
+
+    private void initLogin() {
+
+        //Establish initialize connection, sets session id and cookies.
+        Document document;
+        try {
+            document = Jsoup.parse(getPageContent(DEFAULT));
+        }catch (Exception e){
+            Log.d("initLogin", e.toString());
+            return;
+        }
+
+
+        Elements inputElements = document.getElementsByTag("input");
+
+        String viewSt = null;
+        String viewGen = null;
+        String eventVal = null;
+
+        for (Element inputElement : inputElements) {
+            String key = inputElement.attr("name");
+            String value = inputElement.attr("value");
+            switch (key) {
+                case "__VIEWSTATE":
+                    viewSt = value;
+                    break;
+
+                case "__VIEWSTATEGENERATOR":
+                    viewGen = value;
+                    break;
+
+                case "__EVENTVALIDATION":
+                    eventVal = value;
+                    break;
+            }
+        }
+
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("__LASTFOCUS", "")
+                .addFormDataPart("__EVENTTARGET", "")
+                .addFormDataPart("__EVENTARGUMENT", "")
+                .addFormDataPart("__VIEWSTATE", viewSt)
+                .addFormDataPart("__VIEWSTATEGENERATOR", viewGen)
+                .addFormDataPart("__EVENTVALIDATION", eventVal)
+                .addFormDataPart("ctl00$MainContent$txtLogin", "0163")
+                .addFormDataPart("ctl00$MainContent$btnLogin", "Log In")
+                .addFormDataPart("ctl00$TimoutControl1$TimeoutPopupState", "{&quot;windowsState&quot;:&quot;0:0:-1:0:0:0:-10000:-10000:1:0:0:0&quot;}")
+                .addFormDataPart("DXScript", "1_258,1_139,1_252,1_165,1_142,1_136,1_244,1_242,1_152,1_185,1_137")
+                .addFormDataPart("DXCss", "0_1239%2C1_29%2C1_32%2C1_30%2C0_1241%2C1_9%2C1_10%2C1_8%2Chttp%3A%2F%2Fgc.kis.v2.scr.kaspersky-labs.com%2FE3E8934C-235A-4B0E-825A-35A08381A191%2Fabn%2Fmain.css%3Fattr%3DaHR0cDovLzEwLjEwLjguNC9kY21vYmlsZTIvKFMobmk0c2pjdmVwZWhkajBrMWF4c3kzd2cyKSkvRGVmYXVsdC5hc3B4%2C%2FDCMobile2%2FContent%2Fbootstrap.css%2C%2FDCMobile2%2FContent%2FSite.css%2Cfavicon.ico")
+                .build();
+
+        Request request = new Request.Builder()
+                .url(urlBase + DEFAULT)
+                .post(requestBody)
+                .addHeader("Cookie", String.valueOf(cookieList.get(0)))
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            // Do something with the response.
+        } catch (IOException e) {
+            Log.d("initLogin", e.toString());
+        }
+    }
+
+    private Pair<Job, Operation> getJobData(String html, String jobId, String operationId){
+
+        Job job = new Job(jobId);
+        Document doc = Jsoup.parse(html);
+
+        Elements jobData = doc.getElementById("JobData").getElementsByTag("span");
+        Elements qtyData = doc.getElementById("QtyData").getElementsByTag("span");
+        Elements customerData = doc.getElementById("CustData").getElementsByTag("span");
+
+        Elements routes =
+                doc.getElementById("grdRouting_DXMainTable")
+                        .getElementsByAttributeValueMatching("id", Pattern.compile("^grdRouting_DXDataRow."));
+        Elements picks =
+                doc.getElementById("grdPick_DXMainTable")
+                        .getElementsByAttributeValueMatching("id", Pattern.compile("^grdPick_DXDataRow."));
+        Elements buys =
+                doc.getElementById("grdBuy_DXMainTable")
+                        .getElementsByAttributeValueMatching("id", Pattern.compile("^grdBuy_DXDataRow."));
+
+        parseJobData(job, jobData);
+        parseQtyData(job, qtyData);
+        parseCustomerData(job, customerData);
+
+        Operation operation = new Operation(operationId);
+
+        if (routes.size() > 0) {
+            for (Element elem : routes) {
+                //Check for the transactions operation ONLY
+                if(elem.getElementsByTag("td").get(0).text().equals(operationId)){
+                    parseRoutes(elem.getElementsByTag("td"), operation);
+                }
+            }
+        }
+        if (picks.size() > 0) {
+            try {
+                parsePicks(job, picks.get(0).getElementsByTag("td"));
+            }catch (Exception e){
+                Log.d("JBC", e.toString());
+            }
+
+        }
+        if (buys.size() > 0) {
+            parseBuys(job, buys.get(0).getElementsByTag("td"));
+        }
+        return new Pair<>(job, operation);
     }
 
     /**
@@ -128,127 +380,6 @@ public class JobBossClient {
         return response.toString();
     }
 
-    private String postRequest(String formParams, String path) throws IOException {
-        URL obj = new URL(urlBase.concat(path));
-        conn = (HttpURLConnection) obj.openConnection();
-        conn.setInstanceFollowRedirects(true);
-        conn.setUseCaches(true);
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Connection", "Keep-alive");
-        conn.setRequestProperty("Upgrade-Insecure-Requests", "1");
-        conn.setRequestProperty("DNT", "1");
-        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        conn.setRequestProperty("User-Agent", USER_AGENT);
-        conn.setRequestProperty(
-                "Accept",
-                "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-        conn.setRequestProperty("Referer", urlBase.concat(path));
-        conn.setRequestProperty("Accept-Language", "en-US,en;q=0.9");
-        conn.setRequestProperty("Content-Length", Integer.toString(formParams.length()));
-
-        if (!(cookieList == null)) {
-            for (HttpCookie cookie : cookieList) {
-                conn.setRequestProperty("Cookie", cookie.toString());
-            }
-        }
-
-        conn.setDoInput(true);
-        conn.setDoOutput(true);
-
-        DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
-        wr.writeBytes(formParams);
-        wr.flush();
-        wr.close();
-
-        System.out.println("\nSending 'POST' request to URL : " + urlBase + path);
-        System.out.println("Response Code : " + conn.getResponseCode());
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String inputLine;
-        StringBuilder response = new StringBuilder();
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-            // System.out.println(inputLine);
-        }
-        in.close();
-        return response.toString();
-    }
-
-    /**
-     * Obtains the entry parameters, and job identification number
-     */
-    public List<Transaction> getTransactions() throws Exception {
-        List<Transaction> transactions = new ArrayList<>();
-        Transaction singleTransaction;
-
-        Document doc = Jsoup.parse(getPageContent(JOB_ENTRIES));
-        Elements links = doc.getElementsByAttribute("href");
-
-        for (Element elem : links) {
-            // Move through all the links and find the entry routes
-            String link = elem.attr("href");
-            if (link.contains("OpStop.aspx")) {
-                //Set jobId and create Transaction
-                String jobId = elem.text();
-                singleTransaction = new Transaction(link);
-                String operationId = singleTransaction.getOperationId();
-                // Get job data
-                String html = getPageContent(JOB_DETAILS.concat("?id=" + elem.text()));
-                Pair<Job, Operation> pair = getData(html, jobId, operationId);
-                singleTransaction.setJob(pair.first);
-                singleTransaction.setOperation(pair.second);
-            }
-        }
-        return transactions;
-    }
-
-    private Pair<Job, Operation> getData(String html, String jobId, String operationId) throws ParseException {
-
-        Job job = new Job(jobId);
-        Document doc = Jsoup.parse(html);
-
-        Elements jobData = doc.getElementById("JobData").getElementsByTag("span");
-        Elements qtyData = doc.getElementById("QtyData").getElementsByTag("span");
-        Elements customerData = doc.getElementById("CustData").getElementsByTag("span");
-
-        Elements routes =
-                doc.getElementById("grdRouting_DXMainTable")
-                        .getElementsByAttributeValueMatching("id", Pattern.compile("^grdRouting_DXDataRow."));
-        Elements picks =
-                doc.getElementById("grdPick_DXMainTable")
-                        .getElementsByAttributeValueMatching("id", Pattern.compile("^grdPick_DXDataRow."));
-        Elements buys =
-                doc.getElementById("grdBuy_DXMainTable")
-                        .getElementsByAttributeValueMatching("id", Pattern.compile("^grdBuy_DXDataRow."));
-
-        parseJobData(job, jobData);
-        parseQtyData(job, qtyData);
-        parseCustomerData(job, customerData);
-
-        Operation operation = new Operation(operationId);
-
-        if (routes.size() > 0) {
-            for (Element elem : routes) {
-                //Check for the transactions operation ONLY
-                if(elem.getElementsByTag("td").get(0).text().equals(operationId)){
-                    parseRoutes(elem.getElementsByTag("td"), operation);
-                }
-            }
-        }
-        if (picks.size() > 0) {
-            try {
-                parsePicks(job, picks.get(0).getElementsByTag("td"));
-            }catch (Exception e){
-                Log.d("JBC", e.toString());
-            }
-
-        }
-        if (buys.size() > 0) {
-            parseBuys(job, buys.get(0).getElementsByTag("td"));
-        }
-        return new Pair<>(job, operation);
-    }
-
     /**
      * Sets the session ID in the base url.
      */
@@ -260,254 +391,7 @@ public class JobBossClient {
         }
     }
 
-    // TODO: test opStart
-    private String opStart(Employee emp, String operationId) throws Exception {
-        return postRequest(
-                startFormParams(getPageContent(OPERATION_START), emp, operationId), OPERATION_START);
-    }
-
-   /* // TODO: Fix opStop
-    private String opStop(Employee emp, StopForm form) throws Exception {
-        System.out.println(emp.getTransactionPath(form.getOperationId()));
-        return postRequest(stopFormParams(getPageContent("/" + emp.getTransactionPath(form.getOperationId())), emp, form), "/" + emp.getTransactionPath(form.getOperationId()));
-    }*/
-
-/*
-  private String clockInAndOut(Employee emp) throws Exception {
-    return postRequest(defaultFormParams(getPageContent(HOME), emp), HOME);
-  }
-*/
-
-    /**
-     * Grabs the form input names and values from the DEFAULT page.
-     */
-    private void defaultFormParams(String html, Employee emp) throws UnsupportedEncodingException {
-        Document doc = Jsoup.parse(html);
-
-        Elements inputElements = doc.getElementsByTag("input");
-        List<String> paramList = new ArrayList<>();
-
-        String viewSt = null;
-        String viewGen = null;
-        String eventVal = null;
-
-        for (Element inputElement : inputElements) {
-            String key = inputElement.attr("name");
-            String value = inputElement.attr("value");
-            switch (key) {
-                case "__VIEWSTATE":
-                    viewSt = value;
-                    break;
-
-                case "__VIEWSTATEGENERATOR":
-                    viewGen = value;
-                    break;
-
-                case "__EVENTVALIDATION":
-                    eventVal = value;
-                    break;
-            }
-        }
-
-        OkHttpClient client = new OkHttpClient();
-
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("__LASTFOCUS", "")
-                .addFormDataPart("__EVENTTARGET", "")
-                .addFormDataPart("__EVENTARGUMENT", "")
-                .addFormDataPart("__VIEWSTATE", viewSt)
-                .addFormDataPart("__VIEWSTATEGENERATOR", viewGen)
-                .addFormDataPart("__EVENTVALIDATION", eventVal)
-                .addFormDataPart("ctl00$MainContent$txtLogin", "0163")
-                .addFormDataPart("ctl00$MainContent$btnLogin", "Log In")
-                .addFormDataPart("ctl00$TimoutControl1$TimeoutPopupState", "{&quot;windowsState&quot;:&quot;0:0:-1:0:0:0:-10000:-10000:1:0:0:0&quot;}")
-                .addFormDataPart("DXScript", "1_258,1_139,1_252,1_165,1_142,1_136,1_244,1_242,1_152,1_185,1_137")
-                .addFormDataPart("DXCss", "0_1239%2C1_29%2C1_32%2C1_30%2C0_1241%2C1_9%2C1_10%2C1_8%2Chttp%3A%2F%2Fgc.kis.v2.scr.kaspersky-labs.com%2FE3E8934C-235A-4B0E-825A-35A08381A191%2Fabn%2Fmain.css%3Fattr%3DaHR0cDovLzEwLjEwLjguNC9kY21vYmlsZTIvKFMobmk0c2pjdmVwZWhkajBrMWF4c3kzd2cyKSkvRGVmYXVsdC5hc3B4%2C%2FDCMobile2%2FContent%2Fbootstrap.css%2C%2FDCMobile2%2FContent%2FSite.css%2Cfavicon.ico")
-                .build();
-
-        Request request = new Request.Builder()
-                .url(urlBase + DEFAULT)
-                .post(requestBody)
-                .addHeader("Cookie", String.valueOf(cookieList.get(0)))
-                .build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            // Do something with the response.
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String startFormParams(String html, Employee emp, String operationId) throws UnsupportedEncodingException {
-        Document doc = Jsoup.parse(html);
-
-        Elements inputElements = doc.getElementsByTag("input");
-        List<String> paramList = new ArrayList<>();
-
-        for (Element inputElement : inputElements) {
-            String key = inputElement.attr("name");
-            String value = inputElement.attr("value");
-            switch (key) {
-                case "ctl00$MainContent$txtOpKey":
-                    value = operationId;
-                    paramList.add(URLEncoder.encode(key, UTF_8) + "=" + URLEncoder.encode(value, UTF_8));
-                    break;
-                case "ctl00$MainContent$ctl01$hiddenIsTabChange":
-                    paramList.add(URLEncoder.encode(key, UTF_8) + "=" + URLEncoder.encode(value, UTF_8));
-                    paramList.add(URLEncoder.encode("ctl00$MainContent$ctl01$pcSearchResults", UTF_8) + "=" + URLEncoder.encode("{&quot;activeTabIndex&quot;:2}", UTF_8));
-                    paramList.add(URLEncoder.encode("ctl00$MainContent$ctl01$pcSearchResults$hiddenErrorCheck", UTF_8) + "=");
-                    paramList.add(URLEncoder.encode("ctl00$MainContent$ctl01$pcSearchResults$grdWCJobList", UTF_8) + "=" + URLEncoder.encode("{&quot;keys&quot;:[],&quot;callbackState&quot;:&quot;OIxpDDEyWxXXjnhKwOoKQs6d7Er+T2TSN7Xt+2f128y/6Qu65v+abIQdWyyi525j5P0nGOSOI9vDXdEMEppUN6uVjCJHizeO73Kh5RXFD/vR+U54l38ChXF80FAAXOkpKAn/9FFXKigLb8vNWZatpNGjk6JrFu0hW4CVRl2ARWTerfx/jPpN8wCfWaG/AUQ7JivpmqBYQn7y3FKZLFYCXENMhbZPnkmOlxV3SbPLBHziWnW2vLUQj/i+agkE4AwToIUTZMAW6mckMbI5zWlbbqMYJHcGHmm+JJmCmvYU66GmK4mTaxWaTQMfmaFDmqkRqRg3WcAQLbh2I8yXSSxz+rudFg4PSJQXY/dy109QOiM1hX2GqREDNWmtO4vwqOs2GTf7IJGw42k+iqjdGxsAsv1O2xrs31V9bSIfWOEQYXM=&quot;,&quot;selection&quot;:&quot;&quot;}", UTF_8));
-                    break;
-                case "ctl00$MainContent$hidWorkCenter":
-                    //paramList.add(
-                    //  URLEncoder.encode("ctl00$MainContent$ctl02$grdWCFilter",UTF_8) + "="
-                    //    + URLEncoder.encode("{&quot;lastMultiSelectIndex&quot;:-1,&quot;keys&quot;:[&quot;ASSEMBLY&quot;,&quot;BELTSAND&quot;,&quot;BRZ&quot;,&quot;BS&quot;,&quot;BV2&quot;,&quot;CAD&quot;,&quot;CIN2&quot;,&quot;CLEANBLACK&quot;,&quot;CNCLATHE&quot;,&quot;CNCMILL&quot;,&quot;CP3&quot;,&quot;CP4&quot;,&quot;CS&quot;,&quot;DAREX&quot;,&quot;DEBURR&quot;,&quot;DELIVERY&quot;,&quot;DEMAG&quot;,&quot;DKL&quot;,&quot;EDM-DRILL&quot;,&quot;EDM-WIRE&quot;,&quot;ENGR&quot;,&quot;EX-50V&quot;,&quot;HANDWORK&quot;,&quot;HONE&quot;,&quot;INSPECTION&quot;,&quot;K1&quot;,&quot;K2&quot;,&quot;LAPPING&quot;,&quot;MANGRIND&quot;,&quot;MANLATHE&quot;,&quot;MANMILL&quot;,&quot;MITCOMP&quot;,&quot;MNT&quot;,&quot;MRK&quot;,&quot;MYF&quot;,&quot;PG1000&quot;,&quot;PRESS&quot;,&quot;PW&quot;,&quot;PWR&quot;,&quot;PWR-LOADER&quot;,&quot;R-D&quot;,&quot;RCO&quot;,&quot;RECEIVING&quot;,&quot;RG6&quot;,&quot;S1&quot;,&quot;S33&quot;,&quot;SB&quot;,&quot;SHIPPING&quot;,&quot;STAMP&quot;,&quot;SUP&quot;,&quot;SWISH&quot;,&quot;TRAIN&quot;,&quot;TRU&quot;,&quot;TRUCK&quot;,&quot;V1&quot;,&quot;V2&quot;,&quot;WALT35&quot;,&quot;WALT44&quot;,&quot;WALT50&quot;,&quot;WIREWHL&quot;],&quot;callbackState&quot;:&quot;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&quot;,&quot;selection&quot;:&quot;&quot;}", UTF_8));
-                    paramList.add(URLEncoder.encode(key, UTF_8) + "=" + URLEncoder.encode("{&quot;windowsState&quot;:&quot;0:0:-1:0:0:0:-10000:-10000:1:0:0:0&quot;}", UTF_8));
-                    break;
-                case "ctl00$TimoutControl1$TimeoutPopup$TPCFm1$TC$OkButton":
-                    key = "ctl00$TimoutControl1$TimeoutPopupState";
-                    paramList.add(URLEncoder.encode(key, UTF_8) + "=" + URLEncoder.encode("{&quot;windowsState&quot;:&quot;0:0:-1:0:0:0:-10000:-10000:1:0:0:0&quot;}", UTF_8));
-                    break;
-                default:
-                    paramList.add(URLEncoder.encode(key, UTF_8) + "=" + URLEncoder.encode(value, UTF_8));
-                    System.out.println("Key: " + key + "\nValue: " + value);
-                    break;
-            }
-        }
-
-
-        paramList.add(
-                "DXScript"
-                        + "="
-                        + URLEncoder.encode(
-                        "1_258,1_139,1_252,1_165,1_142,1_136,1_244,1_242,1_152,1_185,1_137", UTF_8));
-        paramList.add(
-                "DXCss"
-                        + "="
-                        + "0_1239%2C1_29%2C1_32%2C1_30%2C0_1241%2C1_9%2C1_10%2C1_8%2Chttp%3A%2F%2Fgc.kis.v2.scr.kaspersky-labs.com%2FE3E8934C-235A-4B0E-825A-35A08381A191%2Fabn%2Fmain.css%3Fattr%3DaHR0cDovLzEwLjEwLjguNC9kY21vYmlsZTIvKFMobmk0c2pjdmVwZWhkajBrMWF4c3kzd2cyKSkvRGVmYXVsdC5hc3B4%2C%2FDCMobile2%2FContent%2Fbootstrap.css%2C%2FDCMobile2%2FContent%2FSite.css%2Cfavicon.ico");
-
-        StringBuilder result = new StringBuilder();
-        for (String param : paramList) {
-            System.out.println(param);
-            if (result.length() == 0) {
-                result.append(param);
-            } else {
-                result.append("&").append(param);
-            }
-        }
-        return result.toString();
-    }
-
-    private String stopFormParams(String html, Employee emp, StopForm stopForm) throws UnsupportedEncodingException {
-        Document doc = Jsoup.parse(html);
-
-        Elements inputElements = doc.getElementsByTag("input");
-        List<String> paramList = new ArrayList<>();
-
-        for (Element inputElement : inputElements) {
-            String key = inputElement.attr("name");
-            String value = inputElement.attr("value");
-            System.out.println("Key: " + key);
-            System.out.println("Value: " + value);
-
-            switch (key) {
-                case "ctl00$MainContent$pcStopFields":
-                    value = "{&quot;activeTabIndex&quot;:0}";
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    break;
-                case "ctl00$MainContent$pcStopFields$hidRO0":
-                    //Op Key
-                    value = "";
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    //Add setup/run key value loaded via js
-                    key = "ctl00$MainContent$pcStopFields$DC1";
-                    value = stopForm.getSetupBool();
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    break;
-                case "ctl00$MainContent$pcStopFields$DC2":
-                    //Labor Hours
-                    value = String.valueOf(stopForm.getLaborHours());
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    break;
-                case "ctl00$MainContent$pcStopFields$DC3":
-                    //Quantity Completed
-                    value = String.valueOf(stopForm.getQuantityCompleted());
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    break;
-                case "ctl00$MainContent$pcStopFields$HidDC4":
-                    //Rework check box
-                    value = stopForm.getRework();
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    //If it is a rework add rework code
-                    if (stopForm.getRework().equals("yes")) {
-                        key = "ctl00$MainContent$pcStopFields$DC5";
-                        value = String.valueOf(stopForm.getReworkCode());
-                        paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    }
-                    break;
-                case "ctl00$MainContent$pcStopFields$DC6":
-                    //Scrap Quantity
-                    value = String.valueOf(stopForm.getScrapQuantity());
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    if (stopForm.getScrapQuantity() > 0) {
-                        key = "ctl00$MainContent$pcStopFields$DC7";
-                        value = String.valueOf(stopForm.getScrapCode());
-                        paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    }
-                    break;
-                case "ctl00$MainContent$pcStopFields$DC8":
-                    //Percent Complete
-                    value = "0";
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    break;
-                case "ctl00$MainContent$pcStopFields$DC9":
-                    //Notes
-                    value = stopForm.getNotes();
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    break;
-                case "ctl00$MainContent$pcStopFields$DC10":
-                    //Op Complete
-                    value = stopForm.getCompletedBool();
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    break;
-                case "ctl00$MainContent$btnOpStop":
-                    value = "Submit";
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8));
-                    break;
-                case "ctl00$TimoutControl1$TimeoutPopupState":
-                    value = "{&quot;windowsState&quot;:&quot;0:0:-1:0:0:0:-10000:-10000:1:0:0:0&quot;}";
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8).replace("$", "%"));
-                    break;
-                default:
-                    key.replace("$", "%24");
-                    paramList.add(key + "=" + URLEncoder.encode(value, UTF_8).replace("$", "%"));
-                    break;
-            }
-        }
-        paramList.add(
-                "DXScript"
-                        + "="
-                        + URLEncoder.encode(
-                        "1_258,1_139,1_252,1_165,1_142,1_136,1_244,1_242,1_152,1_185,1_137", UTF_8));
-        paramList.add(
-                "DXCss"
-                        + "="
-                        + "0_1239%2C1_29%2C1_32%2C1_30%2C0_1241%2C1_9%2C1_10%2C1_8%2Chttp%3A%2F%2Fgc.kis.v2.scr.kaspersky-labs.com%2FE3E8934C-235A-4B0E-825A-35A08381A191%2Fabn%2Fmain.css%3Fattr%3DaHR0cDovLzEwLjEwLjguNC9kY21vYmlsZTIvKFMobmk0c2pjdmVwZWhkajBrMWF4c3kzd2cyKSkvRGVmYXVsdC5hc3B4%2C%2FDCMobile2%2FContent%2Fbootstrap.css%2C%2FDCMobile2%2FContent%2FSite.css%2Cfavicon.ico");
-
-        StringBuilder result = new StringBuilder();
-        for (String param : paramList) {
-            if (result.length() == 0) {
-                result.append(param);
-            } else {
-                result.append("&").append(param);
-            }
-        }
-        return result.toString();
-    }
-
-    private void parseJobData(Job job, Elements elements) throws ParseException {
+    private void parseJobData(Job job, Elements elements) {
         for (int i = 0; i < elements.size(); i++) {
             //System.out.println(elements.get(i).text());
             switch (i) {

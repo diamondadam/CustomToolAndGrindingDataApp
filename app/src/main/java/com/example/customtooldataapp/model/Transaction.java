@@ -1,5 +1,7 @@
 package com.example.customtooldataapp.model;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.Embedded;
 import androidx.room.Entity;
@@ -21,23 +23,19 @@ public class Transaction {
     private String logout;
     private String keyID;
 
-    private String operationName;
-
     @Embedded
     private Job job;
 
     @Embedded
     private Operation operation;
 
-    public Transaction(){}
+    public Transaction(){
+        this.tranID = "ERROR";
+    }
 
     public Transaction(String path) {
         this.transactionPath = path;
         parsePath(path);
-    }
-
-    public void setOperationName(String operationName) {
-        this.operationName = operationName;
     }
 
     public Job getJob() {
@@ -56,18 +54,20 @@ public class Transaction {
         this.operation = operation;
     }
 
-
     private void parsePath(String path) {
+        //OpStop.aspx?tranType=10&keyID=217000&tranID=5AE-6778-SH234-0&logOut=Yes
 
         this.tranType = path.split("&", 4)[0].replace("OpStop.aspx?tranType=", "");
-        this.tranID = path.split("&", 4)[2].replace("tranID=", "");
-        this.logout = path.split("&", 4)[3].replace("logOut=", "");
+        Log.d("parsePath", tranType);
         this.keyID = path.split("&", 4)[1].replace("keyID=", "");
+        Log.d("parsePath", keyID);
+        this.tranID = path.split("&", 4)[2].replace("tranID=", "");
+        Log.d("parsePath", tranID);
+        this.logout = path.split("&", 4)[3].replace("logOut=", "");
+        Log.d("parsePath", logout);
+
     }
 
-    public String getOperationName() {
-        return operationName;
-    }
 
     public String getOperationId() {
         return keyID;
@@ -134,4 +134,10 @@ public class Transaction {
         this.keyID = keyID;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return "Transaction\n\tTranId: " + tranID + "\n\tTranType: " + tranType + "\n\tLogout: " + logout + "\n\tkeyId: " + keyID
+                + "\n\t\tJobId: " + getJob().getJobId() + "\n\t\tOperation Id: " + getOperation().getOperationNumber();
+    }
 }

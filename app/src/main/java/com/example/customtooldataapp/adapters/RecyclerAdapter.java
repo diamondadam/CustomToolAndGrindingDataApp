@@ -26,7 +26,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Transa
     private LiveData<List<Transaction>> transactions;
 
     public RecyclerAdapter(Fragment fragment, LiveData<List<Transaction>> transactions){
-        Log.d("TransactionRecyclerAdap", "Constructor");
+        Log.d("RecyclerAdapter", "Constructor");
         this.layoutInflater = LayoutInflater.from(fragment.getContext());
         this.fragmentManager = fragment.getChildFragmentManager();
         this.lifecycle = fragment.getLifecycle();
@@ -36,7 +36,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Transa
     @NonNull
     @Override
     public TransactionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d("TransactionRecyclerAdap", "onCreateViewHolder");
+        Log.d("RecyclerAdapter", "onCreateViewHolder");
         View transactionView = layoutInflater.inflate(R.layout.item_transaction, parent, false);
         return new TransactionViewHolder(transactionView);
     }
@@ -49,10 +49,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Transa
     @Override
     public int getItemCount() {
         if(transactions.getValue() == null){
-            Log.d("TransactionRecycAdapter", "Transactions are null...");
+            Log.d("RecyclerAdapter", "Transactions are null...");
             return 0;
         }else{
-            Log.d("TransactionRecycAdapter", "Size: " +  transactions.getValue().size());
+            Log.d("RecyclerAdapter", "Size: " +  transactions.getValue().size());
             return transactions.getValue().size();
         }
     }
@@ -63,7 +63,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Transa
         public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            Log.d("TransactionViewHolder", "Location");
+            Log.d("TransactionViewHolder", "ViewHolder");
             viewPager2 = itemView.findViewById(R.id.transactionViewPager);
 
             DataFragmentAdapter adapter = new DataFragmentAdapter(fragmentManager, lifecycle, transactions.getValue().get(position));
@@ -78,7 +78,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Transa
 
         @Override
         public void onClick(View v) {
-            Log.d("TRA: OnClick", "Location");
+            Log.d("Recycler Adapter", "OnClick");
         }
 
 

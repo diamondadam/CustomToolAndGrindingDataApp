@@ -39,7 +39,7 @@ public class CurrentFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.d("CurrentFragment", "onCreate");
         super.onCreate(savedInstanceState);
-        CurrentViewModel model = new ViewModelProvider(requireActivity()).get(CurrentViewModel.class);
+        CurrentViewModel model = new ViewModelProvider(this, new CurrentViewModelFactory(this.getActivity().getApplication())).get(CurrentViewModel.class);
         Log.d("CurrentFragment", "...Creating Adapter");
         recyclerAdapter = new RecyclerAdapter(this, model.getTransactions());
         model.getTransactions().observe(this, transactions -> {

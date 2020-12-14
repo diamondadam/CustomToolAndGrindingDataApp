@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.customtooldataapp.R;
+import com.example.customtooldataapp.source.TransactionRepository;
 import com.example.customtooldataapp.ui.transactions.TransactionsFragmentDirections;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -54,11 +56,9 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
-
-
     }
-    @Override
+
+        @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -84,9 +84,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.employee_hours:
                 Log.d("Case", "R.id.employee_hours");
                 Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToEmployeeHoursFragment());
-
                 return true;
-
+            case R.id.action_sync:
+                Log.d("Case", "R.id.action_sync");
+                TransactionRepository.getInstance(getApplication()).syncDatabases();
             default:
                 Log.d("Case", "default");
 

@@ -14,11 +14,11 @@ import java.util.List;
 public class CurrentViewModel extends ViewModel {
 
     private TransactionRepository transactionsRepository;
-    private final LiveData<List<Transaction>> transactions;
+    private LiveData<List<Transaction>> transactions;
 
     public CurrentViewModel(Application application) {
         Log.d("CurrentViewModel", "Constructor");
-        transactionsRepository = new TransactionRepository(application);
+        transactionsRepository = TransactionRepository.getInstance(application);
         transactions = transactionsRepository.getCurrentTransactions();
     }
 

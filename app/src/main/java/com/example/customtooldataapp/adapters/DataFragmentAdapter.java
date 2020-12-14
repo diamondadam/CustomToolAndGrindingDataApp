@@ -30,18 +30,18 @@ public class DataFragmentAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        Log.d("VPTA", "createFragment");
+        Log.d("DataFragmentAdapter", "createFragment");
         switch (position) {
             case 0:
-                Log.d("createFragment", "0");
+                Log.d("DataFragmentAdapter", "0");
                 return NameFragment.newInstance(transaction);
 
             case 1:
-                Log.d("createFragment", "1");
+                Log.d("DataFragmentAdapter", "1");
                 return QuantitiesFragment.newInstance(transaction);
 
             case 2:
-                Log.d("createFragment", "2");
+                Log.d("DataFragmentAdapter", "2");
                 return TimesFragment.newInstance(transaction);
 
             default:
