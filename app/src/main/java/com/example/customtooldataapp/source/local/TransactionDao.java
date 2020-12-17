@@ -26,6 +26,9 @@ public interface TransactionDao {
     @Query("SELECT * FROM transaction_table WHERE logout = :logout_status")
     LiveData<List<Transaction>> loadTransactions(String logout_status);
 
+    @Query("SELECT * FROM transaction_table WHERE logout = :logout_status")
+    List<Transaction> getNonLiveTransactions(String logout_status);
+
     @Query("SELECT * FROM transaction_table WHERE operationNumber = :operationNumber")
     LiveData<List<Transaction>> findByOperationNumber(String operationNumber);
 

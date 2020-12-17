@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.adapters.RecyclerAdapter;
+import com.example.customtooldataapp.adapters.CurrentRecyclerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,11 +24,10 @@ import com.example.customtooldataapp.adapters.RecyclerAdapter;
  */
 public class CurrentFragment extends Fragment {
 
-    private RecyclerAdapter recyclerAdapter;
+    private CurrentRecyclerAdapter currentRecyclerAdapter;
 
     public CurrentFragment() {
         // Required empty public constructor
-        Log.d("PastFragment", "Constructor");
     }
 
     public static CurrentFragment newInstance() {
@@ -41,17 +40,17 @@ public class CurrentFragment extends Fragment {
         super.onCreate(savedInstanceState);
         CurrentViewModel model = new ViewModelProvider(this, new CurrentViewModelFactory(this.getActivity().getApplication())).get(CurrentViewModel.class);
         Log.d("CurrentFragment", "...Creating Adapter");
-        recyclerAdapter = new RecyclerAdapter(this, model.getTransactions());
+        currentRecyclerAdapter = new CurrentRecyclerAdapter(this, model.getTransactions());
         model.getTransactions().observe(this, transactions -> {
             Log.d("CurrentFragment", "...Updating Adapter");
-            recyclerAdapter.notifyDataSetChanged();
+            currentRecyclerAdapter.notifyDataSetChanged();
         });
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         RecyclerView recyclerView = getView().findViewById(R.id.current_recycler);
-        recyclerView.setAdapter(recyclerAdapter);
+        recyclerView.setAdapter(currentRecyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         super.onViewCreated(view, savedInstanceState);
     }

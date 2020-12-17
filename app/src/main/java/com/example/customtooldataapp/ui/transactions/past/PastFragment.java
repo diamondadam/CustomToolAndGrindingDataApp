@@ -15,17 +15,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.adapters.RecyclerAdapter;
-import com.example.customtooldataapp.ui.transactions.current.CurrentViewModel;
-import com.example.customtooldataapp.ui.transactions.current.CurrentViewModelFactory;
+import com.example.customtooldataapp.adapters.CurrentRecyclerAdapter;
+import com.example.customtooldataapp.adapters.PastRecyclerAdapter;
 
 public class PastFragment extends Fragment {
 
-    private RecyclerAdapter recyclerAdapter;
+    private PastRecyclerAdapter recyclerAdapter;
 
     public PastFragment() {
         // Required empty public constructor
-        Log.d("PastFragment", "Constructor");
     }
 
     public static PastFragment newInstance() {
@@ -35,22 +33,23 @@ public class PastFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d("PastFragment", "onCreate");
         super.onCreate(savedInstanceState);
+        Log.d("Past Fragment", "Constructor");
         PastViewModel model = new ViewModelProvider(this, new PastViewModelFactory(this.getActivity().getApplication())).get(PastViewModel.class);
-        Log.d("PastFragment", "...Creating Adapter");
-        recyclerAdapter = new RecyclerAdapter(this, model.getTransactions());
+        recyclerAdapter = new PastRecyclerAdapter(this, model.getTransactions());
         model.getTransactions().observe(this, transactions -> {
-            Log.d("PastFragment", "...Updating Adapter");
+            Log.d("Past Fragment", "Data Changed");
             recyclerAdapter.notifyDataSetChanged();
         });
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        RecyclerView recyclerView = getView().findViewById(R.id.past_recycler);
+        Log.d("Past Fragment", "On View Create");
+        RecyclerView recyclerView = view.findViewById(R.id.past_recycler);
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         super.onViewCreated(view, savedInstanceState);
     }
 

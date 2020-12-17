@@ -16,13 +16,11 @@ public class PastViewModel extends ViewModel {
     private final LiveData<List<Transaction>> transactions;
 
     public PastViewModel(Application application) {
-        Log.d("PastViewModel", "Constructor");
         transactionsRepository = TransactionRepository.getInstance(application);
         transactions = transactionsRepository.getPastTransactions();
     }
 
     public LiveData<List<Transaction>> getTransactions() {
-        Log.d("PastViewModel", "getTransactions()");
         return transactions;
     }
 }

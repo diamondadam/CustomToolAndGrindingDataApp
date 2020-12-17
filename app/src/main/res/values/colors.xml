@@ -9,4 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="lightgrey">#D3D3D3</color>
     <color name="darkgrey">#A9A9A9</color>
+
+    <color name="CustomToolGreen">#0f712e</color>
+    <color name="CustomToolBlack">#000000</color>
 </resources>

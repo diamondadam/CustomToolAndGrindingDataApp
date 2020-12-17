@@ -52,8 +52,6 @@ public class TransactionsFragment extends Fragment {
         viewPager2.setPageTransformer(new MarginPageTransformer(1500));
         viewPager2.setUserInputEnabled(false);
 
-
-        //currentTab = findViewById(R.id.current_tab);
         TabLayout tabLayout = layout.findViewById(R.id.tabs);
         new TabLayoutMediator(tabLayout, viewPager2,
                 (tab, position) -> tab.setText(tabTitles[position])

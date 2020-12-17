@@ -3,7 +3,9 @@ package com.example.customtooldataapp.ui.data;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +13,16 @@ import android.widget.TextView;
 
 import com.example.customtooldataapp.R;
 import com.example.customtooldataapp.model.Transaction;
+import com.example.customtooldataapp.ui.transactions.TransactionsFragmentDirections;
+
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link QuantitiesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class QuantitiesFragment extends Fragment {
+public class QuantitiesFragment extends Fragment implements View.OnClickListener {
 
 
 
@@ -73,7 +78,7 @@ public class QuantitiesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.fragment_quantities, container, false);
-
+        View overlay = layout.findViewById(R.id.quantities_click_overlay);
         TextView orderQtyWidget = layout.findViewById(R.id.order_qty);
         TextView inProductionQtyWidget = layout.findViewById(R.id.in_production_qty);
         TextView makeQtyWidget = layout.findViewById(R.id.make_qty);
@@ -90,7 +95,13 @@ public class QuantitiesFragment extends Fragment {
         pickQtyWidget.setText(String.format("Pick Qty: %s", pickQty));
         shippedQtyWidget.setText(String.format("Shipped Qty: %s", shippedQty));
 
+        overlay.setOnClickListener(this);
         return layout;
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        Log.d("Quantities Fragment", "OnClick");
     }
 }

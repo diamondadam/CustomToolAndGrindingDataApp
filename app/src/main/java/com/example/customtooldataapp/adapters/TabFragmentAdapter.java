@@ -18,16 +18,16 @@ public class TabFragmentAdapter extends FragmentStateAdapter {
         super(fragmentManager, lifecycle);
     }
 
-
     @NonNull
     @Override
     public Fragment createFragment(int position) {
         Log.d("ViewPagerFragmentAdapt", "Position: " + position);
         switch (position) {
             case 0:
-                Log.d("ViewPagerFragmentAdapt", "CurrentFragment: " + position);
+                Log.d("ViewPagerFragmentAdapt", "CurrentFragment: ");
                 return CurrentFragment.newInstance();
             case 1:
+                Log.d("ViewPagerFragmentAdapt", "Past Fragment");
                 return PastFragment.newInstance();
             default:
                 return NoConnectionFragment.newInstance();

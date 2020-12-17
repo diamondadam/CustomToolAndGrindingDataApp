@@ -3,6 +3,8 @@ package com.example.customtooldataapp.ui.data;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.customtooldataapp.R;
@@ -21,7 +24,7 @@ import com.example.customtooldataapp.model.Transaction;
  * Use the {@link TimesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TimesFragment extends Fragment {
+public class TimesFragment extends Fragment implements View.OnClickListener {
 
     private String remainingSetup;
     private String remainingRuntime;
@@ -63,6 +66,8 @@ public class TimesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.fragment_times, container, false);
+        View overlay = layout.findViewById(R.id.times_click_overlay);
+
 
         TextView rSetup = layout.findViewById(R.id.remaining_setup);
         TextView rRuntime = layout.findViewById(R.id.remaining_run);
@@ -73,14 +78,19 @@ public class TimesFragment extends Fragment {
         rRuntime.setText(String.format("Remaining Runtime: %s", remainingRuntime));
         eSetup.setText(String.format("Estimated Setup: %s", setup));
         eRuntime.setText(String.format("Estimated Runtime: %s", runtime));
-        AlphaAnimation buttonClick = new AlphaAnimation(5.0F, 0.25F);
-        buttonClick.setDuration(300);
-        layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("OnClick", "Onclick!");
-            }
-        });
+
+        overlay.setOnClickListener(this);
         return layout;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        Log.d("Times Fragment", "OnClick");
     }
 }

@@ -4,33 +4,22 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.example.customtooldataapp.model.Employee;
 import com.example.customtooldataapp.model.Transaction;
 import com.example.customtooldataapp.source.local.TransactionDao;
 import com.example.customtooldataapp.source.local.TransactionRoomDatabase;
 import com.example.customtooldataapp.source.remote.JobBossClient;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.LongFunction;
-
-/*  String transactionLink = "";
-    String transactionLink1 = "";
-    String transactionLink2 = "";
-    emp.addTransaction(transactionLink, "99999");
-    emp.addTransaction(transactionLink1, "88888");
-    emp.addTransaction(transactionLink2, "88888");
-    */
 
 public class TransactionRepository {
     private static TransactionRepository instance;
-    private JobBossClient jobBossClient;
+
+    private final JobBossClient jobBossClient;
+    private final TransactionDao transactionDao;
+
     private LiveData<List<Transaction>> currentTransactions;
     private LiveData<List<Transaction>> pastTransactions;
-
-    private TransactionDao transactionDao;
 
     public static TransactionRepository getInstance(Application application){
         if(instance == null){
@@ -42,61 +31,77 @@ public class TransactionRepository {
     public TransactionRepository(Application application){
         TransactionRoomDatabase db = TransactionRoomDatabase.getDatabase(application);
         transactionDao = db.transactionDao();
+        //TODO: Pass or get employee id
         jobBossClient = new JobBossClient("0163");
-        Log.d("TransactionRepository", "Populating transactions...");
+
+        Log.d("TransactionRepository", "Beginning Executor...");
+
         TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
-            Log.d("DatabaseExecutor", "Populating transactions...");
-            transactionDao.insertList(jobBossClient.populateTransactions());
+            //transactionDao.deleteAllJobs();
+            Log.d("DatabaseExecutor", "Getting remote transactions...");
+            transactionDao.insertList(jobBossClient.getTransactions());
             Log.d("DatabaseExecutor", "Complete...");
             Log.d("DatabaseExecutor", "Size..." + transactionDao.selectAll().size());
-            for (Transaction transaction: transactionDao.selectAll()){
-                Log.d("DatabaseExecutor",  transaction.toString());
-            }
+
+            currentTransactions = transactionDao.loadTransactions("No");
+            pastTransactions = transactionDao.loadTransactions("Yes");
         });
-        Log.d("TransactionRepository", "Loading transactions...");
-        currentTransactions = transactionDao.loadTransactions("Yes");
-        pastTransactions = transactionDao.loadTransactions("No");
+
+        currentTransactions = transactionDao.loadTransactions("No");
+        pastTransactions = transactionDao.loadTransactions("Yes");
+
     }
 
     public  void syncDatabases(){
-        Log.d("syncDatabases()", "Starting Executor...");
-        TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
-            List<Transaction> transactions = jobBossClient.populateNewTransactions();
-            List<Transaction> databaseTransactions = transactionDao.selectAll();
 
-            for (Transaction transaction: databaseTransactions){
-                if(!transactions.contains(transaction)){
-                    //If the transaction is no longer in the remote database remove it from local
-                    transactionDao.deleteOne(transaction.getTranID());
+        TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
+            List<Transaction> remoteTransactions = jobBossClient.getTransactions();
+            List<Transaction> localTransactions = transactionDao.selectAll();
+
+            /*
+            * For each transaction in local database, check if it exists in the remote database.
+            * If not remove it from the local database.
+            */
+            for (Transaction local: localTransactions){
+                if(!remoteTransactions.contains(local)){
+                    transactionDao.deleteOne(local.getTranID());
                 }
             }
-
-            for (Transaction transaction: transactions){
-                if(!databaseTransactions.contains(transaction)){
-                    //If transaction is in remote database but not local insert it.
+            /*
+             * For each transaction in remote database, check if it exists in the local database.
+             * If not add it to the local database.
+             */
+            for (Transaction transaction: remoteTransactions){
+                if(!localTransactions.contains(transaction)){
                     TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
                         transactionDao.insert(transaction);
                     });
                 }
             }
         });
-        currentTransactions = transactionDao.loadTransactions("Yes");
-        pastTransactions = transactionDao.loadTransactions("No");
-    }
 
-    public void insert(Transaction transaction){
-        TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
-            transactionDao.insert(transaction);
-        });
+        currentTransactions = transactionDao.loadTransactions("No");
+        pastTransactions = transactionDao.loadTransactions("Yes");
     }
 
     public LiveData<List<Transaction>> getCurrentTransactions() {
         Log.d("TransactionsRepository", "getCurrentTransactions()");
+        if(currentTransactions.getValue() != null){
+            for (Transaction transaction: currentTransactions.getValue()){
+                Log.d("currentTransactions", transaction.toString());
+            }
+        }
         return currentTransactions;
     }
 
     public LiveData<List<Transaction>> getPastTransactions(){
+
         Log.d("TransactionsRepository", "getPastTransactions()");
+        if(pastTransactions.getValue() != null){
+            for (Transaction transaction: pastTransactions.getValue()){
+                Log.d("pastTransactions", transaction.toString());
+            }
+        }
         return pastTransactions;
     }
 }

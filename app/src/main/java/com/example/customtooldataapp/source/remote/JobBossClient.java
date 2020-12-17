@@ -2,27 +2,20 @@ package com.example.customtooldataapp.source.remote;
 
 import android.util.Log;
 import android.util.Pair;
-import android.webkit.WebView;
 
-import com.example.customtooldataapp.model.Employee;
 import com.example.customtooldataapp.model.Job;
 import com.example.customtooldataapp.model.Operation;
-import com.example.customtooldataapp.model.StopForm;
 import com.example.customtooldataapp.model.Transaction;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -58,7 +51,7 @@ public class JobBossClient {
      * Obtains the entry parameters, and job identification number
      */
 
-    public List<Transaction> populateTransactions(){
+/*    public List<Transaction> populateTransactions(){
         Log.d("populateTransaction()", "Creating Transactions...");
         List<Transaction> transactions = new ArrayList<>();
 
@@ -165,46 +158,57 @@ public class JobBossClient {
             transactions.add(transaction);
         }
         return transactions;
-    }
+    }*/
     public List<Transaction> getTransactions() {
+        //Initialize login
         initLogin();
+        //Initialize Arraylist
         List<Transaction> transactions = new ArrayList<>();
-        Transaction singleTransaction;
-
+        //Initialize Jsoup Document
         Document document;
+        Pair<Job, Operation> pair;
 
+        //Try to get JobEntries page
         try{
             document = Jsoup.parse(getPageContent(JOB_ENTRIES));
         }catch (Exception e){
             Log.d("getTransactions", e.toString());
             return transactions;
         }
-
+        //Break it up by transactions
         Elements links = document.getElementsByAttribute("href");
 
+        //For each transaction
         for (Element elem : links) {
             // Move through all the links and find the entry routes
             String link = elem.attr("href");
             if (link.contains("OpStop.aspx")) {
                 //Set jobId and create Transaction
                 String jobId = elem.text();
-                singleTransaction = new Transaction(link);
+                Transaction singleTransaction = new Transaction(link);
                 String operationId = singleTransaction.getOperationId();
-                Pair<Job, Operation> pair;
+
 
                 //Try to get job data returns if there is an error
                 try{
                     pair = getJobData(getPageContent(JOB_DETAILS.concat("?id=" + elem.text())), jobId, operationId);
+                    // Get job data
+                    singleTransaction.setJob(pair.first);
+                    singleTransaction.setOperation(pair.second);
+
+                    transactions.add(singleTransaction);
                 }catch (Exception e){
                     Log.d("getTransactions", e.toString());
                     return transactions;
                 }
 
-                // Get job data
-                singleTransaction.setJob(pair.first);
-                singleTransaction.setOperation(pair.second);
+
             }
         }
+
+        Log.d("JBC getTransactions()", "Returning transactions...");
+        Log.d("JBC getTransactions()", "Size: " + transactions.size());
+
         return transactions;
     }
 

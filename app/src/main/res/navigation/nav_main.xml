@@ -13,10 +13,35 @@
         <action
             android:id="@+id/action_transactionsFragment_to_employeeHoursFragment"
             app:destination="@id/employeeHoursFragment" />
+        <action
+            android:id="@+id/action_transactionsFragment_to_operationStartFragment"
+            app:destination="@id/operationStartFragment" />
+        <action
+            android:id="@+id/action_transactionsFragment_to_operationStopFragment"
+            app:destination="@id/operationStopFragment" />
     </fragment>
     <fragment
         android:id="@+id/employeeHoursFragment"
         android:name="com.example.customtooldataapp.ui.employeehours.EmployeeHoursFragment"
         android:label="fragment_employee_hours"
         tools:layout="@layout/fragment_employee_hours" />
+    <fragment
+        android:id="@+id/operationStartFragment"
+        android:name="com.example.customtooldataapp.ui.opstart.OperationStartFragment"
+        android:label="fragment_operation_start"
+        tools:layout="@layout/fragment_operation_start" >
+        <argument android:name="employee_id"/>
+    </fragment>
+    <fragment
+        android:id="@+id/operationStopFragment"
+        android:name="com.example.customtooldataapp.ui.opstop.OperationStopFragment"
+        android:label="fragment_operation_stop"
+        tools:layout="@layout/fragment_operation_stop" >
+        <argument
+            android:name="employee_id"
+            app:argType="string" />
+        <argument
+            android:name="transaction_path"
+            app:argType="string" />
+    </fragment>
 </navigation>
