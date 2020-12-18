@@ -1,9 +1,8 @@
-package com.example.customtooldataapp.ui.data;
+package com.example.customtooldataapp.ui.transactions.itemfragments;
 
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,10 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.model.Transaction;
-import com.example.customtooldataapp.ui.transactions.TransactionsFragmentDirections;
-
-import java.util.Objects;
+import com.example.customtooldataapp.data.model.Transaction;
 
 /**
  * A simple {@link Fragment} subclass.

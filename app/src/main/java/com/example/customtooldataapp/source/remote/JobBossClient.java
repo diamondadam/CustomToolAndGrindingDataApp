@@ -3,9 +3,9 @@ package com.example.customtooldataapp.source.remote;
 import android.util.Log;
 import android.util.Pair;
 
-import com.example.customtooldataapp.model.Job;
-import com.example.customtooldataapp.model.Operation;
-import com.example.customtooldataapp.model.Transaction;
+import com.example.customtooldataapp.data.model.Job;
+import com.example.customtooldataapp.data.model.Operation;
+import com.example.customtooldataapp.data.model.Transaction;
 
 import java.io.BufferedReader;
 import java.io.IOException;

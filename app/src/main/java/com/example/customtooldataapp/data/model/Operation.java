@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.model;
+package com.example.customtooldataapp.data.model;
 
 public class Operation {
 

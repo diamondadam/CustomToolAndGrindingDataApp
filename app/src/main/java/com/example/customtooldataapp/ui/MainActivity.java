@@ -11,6 +11,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.customtooldataapp.R;
+import com.example.customtooldataapp.services.WebService;
 import com.example.customtooldataapp.source.TransactionRepository;
 import com.example.customtooldataapp.ui.transactions.TransactionsFragmentDirections;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,6 +35,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent i = new Intent(this, WebService.class);
+
+        this.startService(i);
 
         //Toolbar Initialization
         Toolbar toolbar = findViewById(R.id.toolbar);

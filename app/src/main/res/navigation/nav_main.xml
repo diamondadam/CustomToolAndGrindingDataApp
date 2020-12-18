@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/employeeHoursFragment"
-        android:name="com.example.customtooldataapp.ui.employeehours.EmployeeHoursFragment"
+        android:name="com.example.customtooldataapp.ui.hours.EmployeeHoursFragment"
         android:label="fragment_employee_hours"
         tools:layout="@layout/fragment_employee_hours" />
     <fragment

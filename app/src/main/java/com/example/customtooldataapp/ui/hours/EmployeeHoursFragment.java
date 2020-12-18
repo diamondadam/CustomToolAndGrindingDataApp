@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.ui.employeehours;
+package com.example.customtooldataapp.ui.hours;
 
 import android.os.Bundle;
 

@@ -1,6 +1,5 @@
-package com.example.customtooldataapp.ui.data;
+package com.example.customtooldataapp.ui.transactions.itemfragments;
 
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,15 +8,12 @@ import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.model.Transaction;
+import com.example.customtooldataapp.data.model.Transaction;
 
 /**
  * A simple {@link Fragment} subclass.

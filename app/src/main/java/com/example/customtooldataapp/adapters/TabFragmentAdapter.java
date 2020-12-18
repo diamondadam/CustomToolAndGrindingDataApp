@@ -9,7 +9,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.customtooldataapp.ui.transactions.current.CurrentFragment;
-import com.example.customtooldataapp.ui.error.NoConnectionFragment;
+
 import com.example.customtooldataapp.ui.transactions.past.PastFragment;
 
 public class TabFragmentAdapter extends FragmentStateAdapter {
@@ -30,7 +30,7 @@ public class TabFragmentAdapter extends FragmentStateAdapter {
                 Log.d("ViewPagerFragmentAdapt", "Past Fragment");
                 return PastFragment.newInstance();
             default:
-                return NoConnectionFragment.newInstance();
+                return CurrentFragment.newInstance();
         }
     }
 

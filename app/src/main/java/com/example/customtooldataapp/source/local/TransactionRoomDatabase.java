@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.example.customtooldataapp.model.Transaction;
+import com.example.customtooldataapp.data.model.Transaction;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

@@ -12,9 +12,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.model.Transaction;
-import com.example.customtooldataapp.ui.opstart.OpStartWebViewClient;
-import com.example.customtooldataapp.ui.opstart.OperationStartFragmentArgs;
 
 public class OperationStopFragment extends Fragment {
     private String employeeId;

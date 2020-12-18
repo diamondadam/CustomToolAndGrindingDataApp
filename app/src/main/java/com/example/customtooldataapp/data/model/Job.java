@@ -1,12 +1,7 @@
-package com.example.customtooldataapp.model;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import java.util.Locale;
+package com.example.customtooldataapp.data.model;
 
 public class Job {
+
     private String jobId;
 
     // Job Data tab
@@ -16,6 +11,7 @@ public class Job {
     private String description;
     private String drawing;
     private String revision;
+
     // Quantities Tab
     private int orderQty;
     private int makeQty;
@@ -23,6 +19,7 @@ public class Job {
     private int inProductionQty;
     private int completedQty;
     private int shippedQty;
+
     // Customer Data
     private String customer;
     private String purchaseOrder;
@@ -186,7 +183,6 @@ public class Job {
     public void setAddress(String address) {
         this.address = address;
     }
-
 
     public String getMaterialRequisition() {
         return materialRequisition;

@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.model;
+package com.example.customtooldataapp.data.model;
 
 import android.util.Log;
 
@@ -79,9 +79,9 @@ public class Transaction {
 
         if (otherObject == null) return false;
 
-        if (!(otherObject instanceof com.example.customtooldataapp.model.Transaction)) return false;
+        if (!(otherObject instanceof Transaction)) return false;
 
-        com.example.customtooldataapp.model.Transaction other = (com.example.customtooldataapp.model.Transaction) otherObject;
+        Transaction other = (Transaction) otherObject;
         return (tranType.equals(other.tranType)
                 && tranID.equals(other.tranID)
                 && logout.equals(other.logout)

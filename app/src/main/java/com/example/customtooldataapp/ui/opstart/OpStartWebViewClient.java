@@ -1,11 +1,8 @@
 package com.example.customtooldataapp.ui.opstart;
 
 import android.util.Log;
-import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import com.example.customtooldataapp.model.Transaction;
 
 public class OpStartWebViewClient extends WebViewClient {
     private final String operationId;
@@ -17,6 +14,8 @@ public class OpStartWebViewClient extends WebViewClient {
         this.employeeId = employeeId;
         this.operationId = operationId;
     }
+
+
 
     @Override
     public void onPageFinished(WebView view, String url) {

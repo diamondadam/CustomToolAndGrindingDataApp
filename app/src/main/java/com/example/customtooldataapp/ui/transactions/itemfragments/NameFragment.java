@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.ui.data;
+package com.example.customtooldataapp.ui.transactions.itemfragments;
 
 import android.os.Bundle;
 
@@ -12,8 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.model.Operation;
-import com.example.customtooldataapp.model.Transaction;
+import com.example.customtooldataapp.data.model.Transaction;
 import com.example.customtooldataapp.ui.transactions.TransactionsFragmentDirections;
 
 /**

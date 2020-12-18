@@ -5,7 +5,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import com.example.customtooldataapp.model.Transaction;
+import com.example.customtooldataapp.data.model.Transaction;
 import com.example.customtooldataapp.source.local.TransactionDao;
 import com.example.customtooldataapp.source.local.TransactionRoomDatabase;
 import com.example.customtooldataapp.source.remote.JobBossClient;

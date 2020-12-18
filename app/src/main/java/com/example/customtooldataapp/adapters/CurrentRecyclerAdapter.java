@@ -15,8 +15,7 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.model.Transaction;
-import com.example.customtooldataapp.source.TransactionRepository;
+import com.example.customtooldataapp.data.model.Transaction;
 
 import java.util.List;
 import java.util.Objects;
