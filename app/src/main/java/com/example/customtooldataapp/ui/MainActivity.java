@@ -12,11 +12,13 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.customtooldataapp.R;
 import com.example.customtooldataapp.services.WebService;
@@ -30,12 +32,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AppBarConfiguration appBarConfiguration;
     private DrawerLayout drawerLayout;
     private static final String EMP_ID = "0163";
+    private String empID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
+        SharedPreferences sharedPreferences = getSharedPreferences("Employee Identification", MODE_PRIVATE);
+        empID = sharedPreferences.getString("ID", "");
         Intent i = new Intent(this, WebService.class);
 
         this.startService(i);
@@ -43,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Toolbar Initialization
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         FloatingActionButton addTransaction = findViewById(R.id.add_button);
 
@@ -57,15 +64,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.bringToFront();
 
         appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.transactionsFragment, R.id.employeeHoursFragment)
+                R.id.transactionsFragment, R.id.yourHoursFragment, R.id.operationStartFragment, R.id.operationStopFragment)
                 .setOpenableLayout(drawerLayout)
                 .build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        setTitle("Employee: " + empID);
+
     }
 
 
@@ -90,13 +99,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d("onNavigationItemSelect", "Item Selected...");
         int id = item.getItemId();
         switch (id) {
-            case R.id.home:
-                Log.d("onNavigationItemSelect", "R.id.home");
-                drawerLayout.closeDrawer(GravityCompat.START);
-                break;
             case R.id.employee_hours:
                 Log.d("onNavigationItemSelect", "R.id.employee_hours");
-                Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToEmployeeHoursFragment());
+                Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToYourHoursFragment());
                 drawerLayout.closeDrawer(GravityCompat.START);
                 break;
             case R.id.operation_start:
@@ -119,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Log.d("Case", "R.id.action_settings");
+                Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToSettingsFragment2());
                 return true;
             case R.id.action_sync:
                 Log.d("Case", "R.id.action_sync");
@@ -130,4 +136,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }else {
+            super.onBackPressed();
+        }
+    }
 }

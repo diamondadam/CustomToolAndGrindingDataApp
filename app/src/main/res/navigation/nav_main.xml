@@ -8,35 +8,30 @@
     <fragment
         android:id="@+id/transactionsFragment"
         android:name="com.example.customtooldataapp.ui.transactions.TransactionsFragment"
-        android:label="fragment_transactions"
-        tools:layout="@layout/fragment_transactions" >
-        <action
-            android:id="@+id/action_transactionsFragment_to_employeeHoursFragment"
-            app:destination="@id/employeeHoursFragment" />
+        tools:layout="@layout/fragment_transactions">
         <action
             android:id="@+id/action_transactionsFragment_to_operationStartFragment"
             app:destination="@id/operationStartFragment" />
         <action
             android:id="@+id/action_transactionsFragment_to_operationStopFragment"
             app:destination="@id/operationStopFragment" />
+        <action
+            android:id="@+id/action_transactionsFragment_to_settingsFragment2"
+            app:destination="@id/settingsFragment2" />
+        <action
+            android:id="@+id/action_transactionsFragment_to_yourHoursFragment"
+            app:destination="@id/yourHoursFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/employeeHoursFragment"
-        android:name="com.example.customtooldataapp.ui.hours.EmployeeHoursFragment"
-        android:label="fragment_employee_hours"
-        tools:layout="@layout/fragment_employee_hours" />
     <fragment
         android:id="@+id/operationStartFragment"
         android:name="com.example.customtooldataapp.ui.opstart.OperationStartFragment"
-        android:label="fragment_operation_start"
-        tools:layout="@layout/fragment_operation_start" >
-        <argument android:name="employee_id"/>
+        tools:layout="@layout/fragment_operation_start">
+        <argument android:name="employee_id" />
     </fragment>
     <fragment
         android:id="@+id/operationStopFragment"
         android:name="com.example.customtooldataapp.ui.opstop.OperationStopFragment"
-        android:label="fragment_operation_stop"
-        tools:layout="@layout/fragment_operation_stop" >
+        tools:layout="@layout/fragment_operation_stop">
         <argument
             android:name="employee_id"
             app:argType="string" />
@@ -44,4 +39,12 @@
             android:name="transaction_path"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment2"
+        android:name="com.example.customtooldataapp.ui.settings.SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/yourHoursFragment"
+        android:name="com.example.customtooldataapp.ui.hours.YourHoursFragment"
+        tools:layout="@layout/fragment_your_hours" />
 </navigation>

@@ -1,6 +1,7 @@
 package com.example.customtooldataapp.source;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -12,10 +13,12 @@ import com.example.customtooldataapp.source.remote.JobBossClient;
 
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class TransactionRepository {
     private static TransactionRepository instance;
 
-    private final JobBossClient jobBossClient;
+    private final String empId;
     private final TransactionDao transactionDao;
 
     private LiveData<List<Transaction>> currentTransactions;
@@ -29,15 +32,18 @@ public class TransactionRepository {
     }
 
     public TransactionRepository(Application application){
+        SharedPreferences sharedPreferences = application.getSharedPreferences("Employee Identification", MODE_PRIVATE);
+        empId = sharedPreferences.getString("ID", "");
+
         TransactionRoomDatabase db = TransactionRoomDatabase.getDatabase(application);
         transactionDao = db.transactionDao();
-        //TODO: Pass or get employee id
-        jobBossClient = new JobBossClient("0163");
 
+        //TODO: Pass or get employee id
+        JobBossClient jobBossClient = new JobBossClient("0163");
         Log.d("TransactionRepository", "Beginning Executor...");
 
         TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
-            //transactionDao.deleteAllJobs();
+            transactionDao.deleteAllJobs();
             Log.d("DatabaseExecutor", "Getting remote transactions...");
             transactionDao.insertList(jobBossClient.getTransactions());
             Log.d("DatabaseExecutor", "Complete...");
@@ -55,7 +61,7 @@ public class TransactionRepository {
     public  void syncDatabases(){
 
         TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
-            List<Transaction> remoteTransactions = jobBossClient.getTransactions();
+            List<Transaction> remoteTransactions = new JobBossClient(empId).getTransactions();
             List<Transaction> localTransactions = transactionDao.selectAll();
 
             /*
@@ -67,6 +73,7 @@ public class TransactionRepository {
                     transactionDao.deleteOne(local.getTranID());
                 }
             }
+
             /*
              * For each transaction in remote database, check if it exists in the local database.
              * If not add it to the local database.

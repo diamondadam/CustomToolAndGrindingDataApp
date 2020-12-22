@@ -29,20 +29,14 @@ import com.example.customtooldataapp.ui.opstop.OperationStopFragment;
 
 import java.io.IOException;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link OperationStartFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class OperationStartFragment extends Fragment {
     private static final String EMP_ID = "Employee Id";
     private static final String OPERATION_ID = "Operation Id";
 
     private String employeeId;
     private String operationId;
-
     private SurfaceView surfaceview;
-
     private CameraSource cameraSource;
     private TextView textView;
     private Button submitButton;

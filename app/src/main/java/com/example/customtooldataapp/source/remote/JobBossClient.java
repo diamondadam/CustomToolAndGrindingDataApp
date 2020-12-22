@@ -45,123 +45,14 @@ public class JobBossClient {
 
     private String employeeId;
 
-    public JobBossClient(String employeeId){this.employeeId = employeeId;}
-
-    /**
-     * Obtains the entry parameters, and job identification number
-     */
-
-/*    public List<Transaction> populateTransactions(){
-        Log.d("populateTransaction()", "Creating Transactions...");
-        List<Transaction> transactions = new ArrayList<>();
-
-        for(int i = 0; i < 10; i++){
-            //String path = "OpStop.aspx?tranType=&tranID=&logOut=&keyID=";
-            int trantype = 10 + (i % 2);
-
-            String tranId = "5AE-6778-SH234-" + i ;
-
-            String logout;
-            if(i % 2 == 0){
-                logout = "Yes";
-            }else{
-                logout = "No";
-            }
-
-            int keyId = 217000 + i;
-            //OpStop.aspx?tranType=10&keyID=217000&tranID=5AE-6778-SH234-0&logOut=Yes
-            StringBuilder stringBuilder = new StringBuilder("OpStop.aspx?tranType=");
-            stringBuilder.append(trantype)
-                    .append("&keyID=").append(keyId)
-                    .append("&tranID=").append(tranId)
-                    .append("&logOut=").append(logout);
-
-            Log.d("Path", stringBuilder.toString());
-            Transaction transaction = new Transaction(stringBuilder.toString());
-
-            Job job = new Job("99500" + i);
-            job.setJobName("SM-2017000" + i);
-            job.setInProductionQty(8);
-            job.setCompletedQty(2);
-            job.setMakeQty(10);
-            job.setCustomer("Structure Medical");
-            job.setAddress("Somewhere in Florida");
-            job.setDescription("Ridiculous boring bar");
-            job.setOrderDate("12/12/2020");
-            job.setQtyRequired(10);
-            job.setShippedQty(0);
-
-            Operation operation = new Operation(String.valueOf(keyId));
-            operation.setFloorNotes("Can't run in mini");
-            operation.setOpName("PWR-060");
-            operation.setQtyCompleted(2);
-            operation.setRemainingRuntime(1);
-            operation.setRemainingSetupTime(1);
-
-            transaction.setJob(job);
-            transaction.setOperation(operation);
-
-            transactions.add(transaction);
-        }
-        Log.d("populateTransaction()", "Returning Transactions...");
-        Log.d("populateTransaction()", "Size: " + transactions.size());
-
-        return transactions;
+    public JobBossClient(String employeeId){
+        this.employeeId = employeeId;
     }
-    public List<Transaction> populateNewTransactions(){
-        List<Transaction> transactions = new ArrayList<>();
-        for(int i = 0; i < 10; i++){
-            //String path = "OpStop.aspx?tranType=&tranID=&logOut=&keyID=";
-            int trantype = 10 + (i % 2);
 
-            String tranId = "5AE-6778-SH234-" + i ;
-
-            String logout;
-            if(i % 2 == 0){
-                logout = "Yes";
-            }else{
-                logout = "No";
-            }
-
-            int keyId = 291000 + i;
-
-            StringBuilder stringBuilder = new StringBuilder("OpStop.aspx?tranType=");
-            stringBuilder.append(trantype)
-                    .append("&keyID=").append(keyId)
-                    .append("&tranID=").append(tranId)
-                    .append("&logOut=").append(logout);
-
-            Transaction transaction = new Transaction(stringBuilder.toString());
-
-            Job job = new Job("58500" + i);
-            job.setJobName("MSC-T16" + i);
-            job.setInProductionQty(8);
-            job.setCompletedQty(2);
-            job.setMakeQty(10);
-            job.setCustomer("Structure Medical");
-            job.setAddress("Somewhere in Florida");
-            job.setDescription("Ridiculous boring bar");
-            job.setOrderDate("12/12/2020");
-            job.setQtyRequired(10);
-            job.setShippedQty(0);
-
-            Operation operation = new Operation(String.valueOf(keyId));
-            operation.setFloorNotes("Can't run in mini");
-            operation.setOpName("PWR-060");
-            operation.setQtyCompleted(2);
-            operation.setRemainingRuntime(1);
-            operation.setRemainingSetupTime(1);
-
-            transaction.setJob(job);
-            transaction.setOperation(operation);
-
-            transactions.add(transaction);
-        }
-        return transactions;
-    }*/
     public List<Transaction> getTransactions() {
         //Initialize login
         initLogin();
+
         //Initialize Arraylist
         List<Transaction> transactions = new ArrayList<>();
         //Initialize Jsoup Document
@@ -212,15 +103,75 @@ public class JobBossClient {
         return transactions;
     }
 
-    //TODO: create operation to get the login status
-    public String getLoginStatus(){
-        return "Placeholder";
+    /**
+     * Returns a String containing the page html.
+     */
+    private String getPageContent(String url_ext) throws Exception {
+        CookieManager cookieManager = new CookieManager();
+        CookieHandler.setDefault(cookieManager);
+        CookieStore cookieStore = cookieManager.getCookieStore();
+
+        URL obj = new URL(urlBase.concat(url_ext));
+
+        conn = (HttpURLConnection) obj.openConnection();
+
+        conn.setInstanceFollowRedirects(true);
+        conn.setUseCaches(true);
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Connection", "Keep-alive");
+        conn.setRequestProperty("Origin", "http://10.10.8.4");
+        conn.setRequestProperty("Upgrade-Insecure-Requests", "1");
+        conn.setRequestProperty("DNT", "1");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty("User-Agent", USER_AGENT);
+        conn.setRequestProperty(
+                "Accept",
+                "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+        conn.setRequestProperty("Referer", urlBase.concat(url_ext));
+        conn.setRequestProperty("Accept-Language", "en-US,en;q=0.9");
+
+        if (!(cookieList == null)) {
+            for (HttpCookie cookie : cookieList) {
+                conn.setRequestProperty("Cookie", cookie.toString());
+            }
+        }
+
+        System.out.println("\nSending 'GET' request to URL : " + urlBase.concat(url_ext));
+        System.out.println("Response Code : " + conn.getResponseCode());
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+
+        in.close();
+
+        setSessionId(conn.getURL().toString());
+
+        // Get the response cookies
+        cookieList = cookieStore.getCookies();
+        return response.toString();
+    }
+
+    /**
+     * Sets the session ID in the base url.
+     */
+    private void setSessionId(String url) {
+        if (urlBase.equals("http://10.10.8.4/dcmobile2/")) {
+            urlBase =
+                    urlBase.concat(
+                            url.replace("http://10.10.8.4/dcmobile2/", "").replaceAll("/Default.aspx", ""));
+        }
     }
 
     private void initLogin() {
 
         //Establish initialize connection, sets session id and cookies.
         Document document;
+
         try {
             document = Jsoup.parse(getPageContent(DEFAULT));
         }catch (Exception e){
@@ -277,7 +228,7 @@ public class JobBossClient {
                 .build();
 
         try {
-            Response response = client.newCall(request).execute();
+            client.newCall(request).execute();
             // Do something with the response.
         } catch (IOException e) {
             Log.d("initLogin", e.toString());
@@ -329,70 +280,6 @@ public class JobBossClient {
             parseBuys(job, buys.get(0).getElementsByTag("td"));
         }
         return new Pair<>(job, operation);
-    }
-
-    /**
-     * Returns a String containing the page html.
-     */
-    private String getPageContent(String url_ext) throws Exception {
-        CookieManager cookieManager = new CookieManager();
-        CookieHandler.setDefault(cookieManager);
-        CookieStore cookieStore = cookieManager.getCookieStore();
-
-        URL obj = new URL(urlBase.concat(url_ext));
-
-        conn = (HttpURLConnection) obj.openConnection();
-
-        conn.setInstanceFollowRedirects(true);
-        conn.setUseCaches(true);
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Connection", "Keep-alive");
-        conn.setRequestProperty("Origin", "http://10.10.8.4");
-        conn.setRequestProperty("Upgrade-Insecure-Requests", "1");
-        conn.setRequestProperty("DNT", "1");
-        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        conn.setRequestProperty("User-Agent", USER_AGENT);
-        conn.setRequestProperty(
-                "Accept",
-                "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-        conn.setRequestProperty("Referer", urlBase.concat(url_ext));
-        conn.setRequestProperty("Accept-Language", "en-US,en;q=0.9");
-        if (!(cookieList == null)) {
-            for (HttpCookie cookie : cookieList) {
-                conn.setRequestProperty("Cookie", cookie.toString());
-            }
-        }
-
-        System.out.println("\nSending 'GET' request to URL : " + urlBase.concat(url_ext));
-        System.out.println("Response Code : " + conn.getResponseCode());
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String inputLine;
-        StringBuilder response = new StringBuilder();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-
-        in.close();
-
-        setSessionId(conn.getURL().toString());
-
-        // Get the response cookies
-        cookieList = cookieStore.getCookies();
-
-        return response.toString();
-    }
-
-    /**
-     * Sets the session ID in the base url.
-     */
-    private void setSessionId(String url) {
-        if (urlBase.equals("http://10.10.8.4/dcmobile2/")) {
-            urlBase =
-                    urlBase.concat(
-                            url.replace("http://10.10.8.4/dcmobile2/", "").replaceAll("/Default.aspx", ""));
-        }
     }
 
     private void parseJobData(Job job, Elements elements) {

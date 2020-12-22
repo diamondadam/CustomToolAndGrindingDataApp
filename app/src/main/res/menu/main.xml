@@ -16,10 +16,4 @@
         app:showAsAction="never"
         />
 
-    <item
-        android:id="@+id/employee_hours"
-        android:orderInCategory="10"
-        android:title="@string/my_hours"
-        app:showAsAction="never"
-        />
 </menu>
