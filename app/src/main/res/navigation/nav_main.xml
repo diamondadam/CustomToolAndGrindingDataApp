@@ -32,9 +32,7 @@
         android:id="@+id/operationStopFragment"
         android:name="com.example.customtooldataapp.ui.opstop.OperationStopFragment"
         tools:layout="@layout/fragment_operation_stop">
-        <argument
-            android:name="employee_id"
-            app:argType="string" />
+
         <argument
             android:name="transaction_path"
             app:argType="string" />

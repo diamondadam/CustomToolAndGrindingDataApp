@@ -45,7 +45,7 @@ public class JobBossClient {
 
     private String employeeId;
 
-    public JobBossClient(String employeeId){
+    public JobBossClient(String employeeId) {
         this.employeeId = employeeId;
     }
 
@@ -60,9 +60,9 @@ public class JobBossClient {
         Pair<Job, Operation> pair;
 
         //Try to get JobEntries page
-        try{
+        try {
             document = Jsoup.parse(getPageContent(JOB_ENTRIES));
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d("getTransactions", e.toString());
             return transactions;
         }
@@ -81,14 +81,14 @@ public class JobBossClient {
 
 
                 //Try to get job data returns if there is an error
-                try{
+                try {
                     pair = getJobData(getPageContent(JOB_DETAILS.concat("?id=" + elem.text())), jobId, operationId);
                     // Get job data
                     singleTransaction.setJob(pair.first);
                     singleTransaction.setOperation(pair.second);
 
                     transactions.add(singleTransaction);
-                }catch (Exception e){
+                } catch (Exception e) {
                     Log.d("getTransactions", e.toString());
                     return transactions;
                 }
@@ -174,7 +174,7 @@ public class JobBossClient {
 
         try {
             document = Jsoup.parse(getPageContent(DEFAULT));
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d("initLogin", e.toString());
             return;
         }
@@ -235,7 +235,7 @@ public class JobBossClient {
         }
     }
 
-    private Pair<Job, Operation> getJobData(String html, String jobId, String operationId){
+    private Pair<Job, Operation> getJobData(String html, String jobId, String operationId) {
 
         Job job = new Job(jobId);
         Document doc = Jsoup.parse(html);
@@ -263,7 +263,7 @@ public class JobBossClient {
         if (routes.size() > 0) {
             for (Element elem : routes) {
                 //Check for the transactions operation ONLY
-                if(elem.getElementsByTag("td").get(0).text().equals(operationId)){
+                if (elem.getElementsByTag("td").get(0).text().equals(operationId)) {
                     parseRoutes(elem.getElementsByTag("td"), operation);
                 }
             }
@@ -271,7 +271,7 @@ public class JobBossClient {
         if (picks.size() > 0) {
             try {
                 parsePicks(job, picks.get(0).getElementsByTag("td"));
-            }catch (Exception e){
+            } catch (Exception e) {
                 Log.d("JBC", e.toString());
             }
 
@@ -336,7 +336,6 @@ public class JobBossClient {
     private void parseCustomerData(Job job, Elements elements) {
 
         for (int i = 0; i < elements.size(); i++) {
-            //System.out.println(elements.get(i).text());
             switch (i) {
                 case 1:
                     job.setCustomer(elements.get(i).text());
@@ -419,7 +418,6 @@ public class JobBossClient {
 
     private void parsePicks(Job job, Elements elements) {
         for (int i = 0; i < elements.size(); i++) {
-            //TODO: Catch number format exception
             switch (i) {
                 case 0:
                     job.setMaterialRequisition(elements.get(i).text());

@@ -88,8 +88,6 @@ public class NameFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         Log.d("Name Fragment", "OnClick");
-        //TODO get employee id from shared prefs
-        String empId = "0163";
-        Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStopFragment(empId, transaction.getTransactionPath()));
+        Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStopFragment(transaction.getTransactionPath()));
     }
 }

@@ -18,7 +18,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class TransactionRepository {
     private static TransactionRepository instance;
 
-    private final String empId;
+    private final String employeeId;
     private final TransactionDao transactionDao;
 
     private LiveData<List<Transaction>> currentTransactions;
@@ -33,13 +33,12 @@ public class TransactionRepository {
 
     public TransactionRepository(Application application){
         SharedPreferences sharedPreferences = application.getSharedPreferences("Employee Identification", MODE_PRIVATE);
-        empId = sharedPreferences.getString("ID", "");
+        employeeId = sharedPreferences.getString("ID", "");
 
         TransactionRoomDatabase db = TransactionRoomDatabase.getDatabase(application);
         transactionDao = db.transactionDao();
 
-        //TODO: Pass or get employee id
-        JobBossClient jobBossClient = new JobBossClient("0163");
+        JobBossClient jobBossClient = new JobBossClient(employeeId);
         Log.d("TransactionRepository", "Beginning Executor...");
 
         TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
@@ -61,7 +60,7 @@ public class TransactionRepository {
     public  void syncDatabases(){
 
         TransactionRoomDatabase.databaseWriteExecutor.execute(()->{
-            List<Transaction> remoteTransactions = new JobBossClient(empId).getTransactions();
+            List<Transaction> remoteTransactions = new JobBossClient(employeeId).getTransactions();
             List<Transaction> localTransactions = transactionDao.selectAll();
 
             /*
