@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.adapters.TabFragmentAdapter;
+import com.example.customtooldataapp.adapters.TabPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -46,7 +46,7 @@ public class TransactionsFragment extends Fragment {
         View layout = inflater.inflate(R.layout.fragment_transactions, container, false);
         //ViewPager2 Initialization
         ViewPager2 viewPager2 = layout.findViewById(R.id.viewpager2);
-        TabFragmentAdapter adapter = new TabFragmentAdapter(getChildFragmentManager(), getLifecycle());
+        TabPagerAdapter adapter = new TabPagerAdapter(getChildFragmentManager(), getLifecycle());
         viewPager2.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
         viewPager2.setAdapter(adapter);
         viewPager2.setPageTransformer(new MarginPageTransformer(1500));

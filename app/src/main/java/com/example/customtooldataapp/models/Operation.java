@@ -1,20 +1,22 @@
-package com.example.customtooldataapp.data.model;
+package com.example.customtooldataapp.models;
+
+import androidx.room.Ignore;
 
 public class Operation {
 
-    private String operationNumber;
-    private String wcVendor;
-    private String opName;
-    private String operationDescription;
-    private String scheduledStart;
-    private String status;
-    private String runMethod;
-    private String floorNotes;
-    private int qtyCompleted;
-    private float remainingRuntime;
-    private float remainingSetupTime;
-    private float setupTime;
-    private float runtime;
+    private String operationNumber = "";
+    private String wcVendor = "";
+    private String opName = "";
+    private String operationDescription = "";
+    private String scheduledStart = "";
+    private String status = "";
+    private String runMethod = "";
+    private String floorNotes = "";
+    private int qtyCompleted = 0;
+    private float remainingRuntime = 0;
+    private float remainingSetupTime = 0;
+    private float setupTime = 0;
+    private float runtime = 0;
 
     public Operation(String operationNumber) {
         this.operationNumber = operationNumber;

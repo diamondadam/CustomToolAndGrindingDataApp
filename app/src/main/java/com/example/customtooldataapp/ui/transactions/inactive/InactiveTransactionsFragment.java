@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.ui.transactions.past;
+package com.example.customtooldataapp.ui.transactions.inactive;
 
 import android.os.Bundle;
 
@@ -15,39 +15,39 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.adapters.CurrentRecyclerAdapter;
-import com.example.customtooldataapp.adapters.PastRecyclerAdapter;
+import com.example.customtooldataapp.adapters.TransactionRecyclerAdapter;
 
-public class PastFragment extends Fragment {
+public class InactiveTransactionsFragment extends Fragment {
 
-    private PastRecyclerAdapter recyclerAdapter;
+    private TransactionRecyclerAdapter transactionRecyclerAdapter;
 
-    public PastFragment() {
+    public InactiveTransactionsFragment() {
         // Required empty public constructor
     }
 
-    public static PastFragment newInstance() {
-        return new PastFragment();
+    public static InactiveTransactionsFragment newInstance() {
+        return new InactiveTransactionsFragment();
     }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("Past Fragment", "Constructor");
-        PastViewModel model = new ViewModelProvider(this, new PastViewModelFactory(this.getActivity().getApplication())).get(PastViewModel.class);
-        recyclerAdapter = new PastRecyclerAdapter(this, model.getTransactions());
+        Log.d("InactiveFragment", "Constructor");
+        InactiveTransactionsViewModel model = new ViewModelProvider(this, new InactiveTransactionViewModelFactory(this.getActivity().getApplication())).get(InactiveTransactionsViewModel.class);
+        transactionRecyclerAdapter = new TransactionRecyclerAdapter(this, model.getTransactions());
         model.getTransactions().observe(this, transactions -> {
-            Log.d("Past Fragment", "Data Changed");
-            recyclerAdapter.notifyDataSetChanged();
+            Log.d("InactiveFragment", "Data Changed");
+            transactionRecyclerAdapter.notifyDataSetChanged();
         });
+
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Log.d("Past Fragment", "On View Create");
+        Log.d("InactiveFragment", "On View Create");
         RecyclerView recyclerView = view.findViewById(R.id.past_recycler);
-        recyclerView.setAdapter(recyclerAdapter);
+        recyclerView.setAdapter(transactionRecyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         super.onViewCreated(view, savedInstanceState);

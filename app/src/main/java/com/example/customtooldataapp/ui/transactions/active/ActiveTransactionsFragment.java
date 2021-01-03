@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.ui.transactions.current;
+package com.example.customtooldataapp.ui.transactions.active;
 
 import android.os.Bundle;
 
@@ -15,42 +15,42 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.adapters.CurrentRecyclerAdapter;
+import com.example.customtooldataapp.adapters.TransactionRecyclerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link CurrentFragment#newInstance} factory method to
+ * Use the {@link ActiveTransactionsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CurrentFragment extends Fragment {
+public class ActiveTransactionsFragment extends Fragment {
 
-    private CurrentRecyclerAdapter currentRecyclerAdapter;
+    private TransactionRecyclerAdapter transactionRecyclerAdapter;
 
-    public CurrentFragment() {
+    public ActiveTransactionsFragment() {
         // Required empty public constructor
     }
 
-    public static CurrentFragment newInstance() {
-        return new CurrentFragment();
+    public static ActiveTransactionsFragment newInstance() {
+        return new ActiveTransactionsFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d("CurrentFragment", "onCreate");
         super.onCreate(savedInstanceState);
-        CurrentViewModel model = new ViewModelProvider(this, new CurrentViewModelFactory(this.getActivity().getApplication())).get(CurrentViewModel.class);
+        ActiveTransactionsViewModel model = new ViewModelProvider(this, new ActiveTransactionsViewModelFactory(this.getActivity().getApplication())).get(ActiveTransactionsViewModel.class);
         Log.d("CurrentFragment", "...Creating Adapter");
-        currentRecyclerAdapter = new CurrentRecyclerAdapter(this, model.getTransactions());
+        transactionRecyclerAdapter = new TransactionRecyclerAdapter(this, model.getTransactions());
         model.getTransactions().observe(this, transactions -> {
             Log.d("CurrentFragment", "...Updating Adapter");
-            currentRecyclerAdapter.notifyDataSetChanged();
+            transactionRecyclerAdapter.notifyDataSetChanged();
         });
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         RecyclerView recyclerView = getView().findViewById(R.id.current_recycler);
-        recyclerView.setAdapter(currentRecyclerAdapter);
+        recyclerView.setAdapter(transactionRecyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         super.onViewCreated(view, savedInstanceState);
     }

@@ -6,11 +6,12 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.example.customtooldataapp.data.model.Transaction;
+import com.example.customtooldataapp.models.Transaction;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+//TODO create migration strategy
 @Database(entities = {Transaction.class}, version = 1, exportSchema = false)
 public abstract class TransactionRoomDatabase extends RoomDatabase {
 

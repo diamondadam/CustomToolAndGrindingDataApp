@@ -8,13 +8,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.customtooldataapp.ui.transactions.current.CurrentFragment;
+import com.example.customtooldataapp.ui.transactions.active.ActiveTransactionsFragment;
 
-import com.example.customtooldataapp.ui.transactions.past.PastFragment;
+import com.example.customtooldataapp.ui.transactions.inactive.InactiveTransactionsFragment;
 
-public class TabFragmentAdapter extends FragmentStateAdapter {
+public class TabPagerAdapter extends FragmentStateAdapter {
 
-    public TabFragmentAdapter(@NonNull FragmentManager fragmentManager, Lifecycle lifecycle) {
+    public TabPagerAdapter(@NonNull FragmentManager fragmentManager, Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
     }
 
@@ -25,12 +25,12 @@ public class TabFragmentAdapter extends FragmentStateAdapter {
         switch (position) {
             case 0:
                 Log.d("ViewPagerFragmentAdapt", "CurrentFragment: ");
-                return CurrentFragment.newInstance();
+                return ActiveTransactionsFragment.newInstance();
             case 1:
                 Log.d("ViewPagerFragmentAdapt", "Past Fragment");
-                return PastFragment.newInstance();
+                return InactiveTransactionsFragment.newInstance();
             default:
-                return CurrentFragment.newInstance();
+                return ActiveTransactionsFragment.newInstance();
         }
     }
 

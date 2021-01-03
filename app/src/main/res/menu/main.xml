@@ -6,9 +6,9 @@
     <item
         android:id="@+id/action_sync"
         android:orderInCategory="1"
-        android:title="Sync Now"
-        android:icon="@drawable/ic_sync_button_foreground"
-        app:showAsAction="always"/>
+        android:title="@string/sync_now"
+        android:icon="@drawable/ic_baseline_sync"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="10"

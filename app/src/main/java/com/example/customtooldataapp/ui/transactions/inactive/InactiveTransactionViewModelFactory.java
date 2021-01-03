@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.ui.transactions.past;
+package com.example.customtooldataapp.ui.transactions.inactive;
 
 import android.app.Application;
 
@@ -6,10 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-public class PastViewModelFactory implements ViewModelProvider.Factory {
+public class InactiveTransactionViewModelFactory implements ViewModelProvider.Factory {
     private Application application;
 
-    public PastViewModelFactory(Application application) {
+    public InactiveTransactionViewModelFactory(Application application) {
         this.application = application;
     }
 
@@ -17,6 +17,6 @@ public class PastViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         //return (T) new MyViewModel(mApplication, mParam);
-        return (T) new PastViewModel(application);
+        return (T) new InactiveTransactionsViewModel(application);
     }
 }

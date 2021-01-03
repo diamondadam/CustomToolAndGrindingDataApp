@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.ui.transactions.itemfragments;
+package com.example.customtooldataapp.ui.transactions.items;
 
 import android.os.Bundle;
 
@@ -11,14 +11,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.data.model.Transaction;
+import com.example.customtooldataapp.models.Transaction;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link QuantitiesFragment#newInstance} factory method to
+ * Use the {@link QuantityFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class QuantitiesFragment extends Fragment implements View.OnClickListener {
+public class QuantityFragment extends Fragment implements View.OnClickListener {
 
 
 
@@ -33,12 +33,12 @@ public class QuantitiesFragment extends Fragment implements View.OnClickListener
 
 
 
-    public QuantitiesFragment() {
+    public QuantityFragment() {
         // Required empty public constructor
     }
 
-    public static QuantitiesFragment newInstance(Transaction transaction) {
-        QuantitiesFragment fragment = new QuantitiesFragment();
+    public static QuantityFragment newInstance(Transaction transaction) {
+        QuantityFragment fragment = new QuantityFragment();
         Bundle args = new Bundle();
 
         args.putString("Order Qty", String.valueOf(transaction.getJob().getOrderQty()));

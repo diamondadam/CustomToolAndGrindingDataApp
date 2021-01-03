@@ -1,27 +1,30 @@
-package com.example.customtooldataapp.data.model;
+package com.example.customtooldataapp.models;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Embedded;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import com.example.customtooldataapp.source.ConnectionError;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 @Entity(tableName = "transaction_table")
 public class Transaction {
 
-    // Key id is the same as the operation number for the operation...
-    // Job id is created when transaction is
-
     @PrimaryKey
     @NonNull
-    private String tranID;
-    private String transactionPath;
-    private String tranType;
-    private String logout;
-    private String keyID;
+    private String tranID = "";
+    private String transactionPath = "";
+    private String tranType = "";
+    private String logout = "";
+    private String keyID = "";
+    private String errorMessage = "";
 
     @Embedded
     private Job job;
@@ -29,13 +32,16 @@ public class Transaction {
     @Embedded
     private Operation operation;
 
-    public Transaction(){
-        this.tranID = "ERROR";
-    }
+    public Transaction(){}
 
     public Transaction(String path) {
         this.transactionPath = path;
         parsePath(path);
+    }
+
+    @Ignore
+    public Transaction(ConnectionError connectionError){
+        this.errorMessage = connectionError.getMessage();
     }
 
     public Job getJob() {
@@ -110,11 +116,12 @@ public class Transaction {
         this.tranType = tranType;
     }
 
+    @NotNull
     public String getTranID() {
         return tranID;
     }
 
-    public void setTranID(String tranID) {
+    public void setTranID(@NotNull String tranID) {
         this.tranID = tranID;
     }
 
@@ -139,5 +146,13 @@ public class Transaction {
     public String toString() {
         return "Transaction\n\tTranId: " + tranID + "\n\tTranType: " + tranType + "\n\tLogout: " + logout + "\n\tkeyId: " + keyID
                 + "\n\t\tJobId: " + getJob().getJobId() + "\n\t\tOperation Id: " + getOperation().getOperationNumber();
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

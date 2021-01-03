@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.ui.transactions.current;
+package com.example.customtooldataapp.ui.transactions.active;
 
 import android.app.Application;
 
@@ -6,12 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.customtooldataapp.ui.transactions.current.CurrentViewModel;
-
-public class CurrentViewModelFactory implements ViewModelProvider.Factory {
+public class ActiveTransactionsViewModelFactory implements ViewModelProvider.Factory {
     private Application application;
 
-    public CurrentViewModelFactory(Application application) {
+    public ActiveTransactionsViewModelFactory(Application application) {
         this.application = application;
    }
 
@@ -19,6 +17,6 @@ public class CurrentViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         //return (T) new MyViewModel(mApplication, mParam);
-        return (T) new CurrentViewModel(application);
+        return (T) new ActiveTransactionsViewModel(application);
     }
 }

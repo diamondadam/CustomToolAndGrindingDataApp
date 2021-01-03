@@ -21,7 +21,6 @@ public class YourHoursFragment extends Fragment {
 
     public static YourHoursFragment newInstance(String param1, String param2) {
         YourHoursFragment fragment = new YourHoursFragment();
-
         return fragment;
     }
 

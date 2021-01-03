@@ -15,19 +15,19 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.data.model.Transaction;
+import com.example.customtooldataapp.models.Transaction;
 
 import java.util.List;
 import java.util.Objects;
 
-public class CurrentRecyclerAdapter extends RecyclerView.Adapter<CurrentRecyclerAdapter.TransactionViewHolder> {
+public class TransactionRecyclerAdapter extends RecyclerView.Adapter<TransactionRecyclerAdapter.TransactionViewHolder> {
     private final LayoutInflater layoutInflater;
     private final FragmentManager fragmentManager;
     private final Lifecycle lifecycle;
     private final LiveData<List<Transaction>> transactions;
 
-    public CurrentRecyclerAdapter(Fragment fragment, LiveData<List<Transaction>> transactions){
-        Log.d("CurrentRecycler", "Constructor");
+    public TransactionRecyclerAdapter(Fragment fragment, LiveData<List<Transaction>> transactions){
+        Log.d("TransactionRecycler", "Constructor");
         this.layoutInflater = LayoutInflater.from(fragment.getContext());
         this.fragmentManager = fragment.getChildFragmentManager();
         this.lifecycle = fragment.getLifecycle();
@@ -37,7 +37,7 @@ public class CurrentRecyclerAdapter extends RecyclerView.Adapter<CurrentRecycler
     @NonNull
     @Override
     public TransactionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d("CurrentRecycler", "onCreateViewHolder");
+        Log.d("TransactionRecycler", "onCreateViewHolder");
         View transactionView = layoutInflater.inflate(R.layout.item_transaction, parent, false);
         return new TransactionViewHolder(transactionView);
     }
@@ -51,10 +51,10 @@ public class CurrentRecyclerAdapter extends RecyclerView.Adapter<CurrentRecycler
     @Override
     public int getItemCount() {
         if(transactions.getValue() == null){
-            Log.d("CurrentRecycler", "Transactions are null...");
+            Log.d("TransactionRecycler", "Transactions are null...");
             return 0;
         }else{
-            Log.d("CurrentRecycler", "Size: " +  transactions.getValue().size());
+            Log.d("TransactionRecycler", "Size: " +  transactions.getValue().size());
             return transactions.getValue().size();
         }
     }
@@ -67,19 +67,20 @@ public class CurrentRecyclerAdapter extends RecyclerView.Adapter<CurrentRecycler
 
         public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
-
             viewPager2 = itemView.findViewById(R.id.transactionViewPager);
+            Log.d("TransactionViewHolder", "Constructor...");
         }
         public void onBind(){
-            DataFragmentAdapter adapter = new DataFragmentAdapter(fragmentManager, lifecycle, Objects.requireNonNull(transactions.getValue()).get(position));
+            DataPagerAdapter adapter = new DataPagerAdapter(fragmentManager, lifecycle, Objects.requireNonNull(transactions.getValue()).get(position));
             viewPager2.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
             viewPager2.setAdapter(adapter);
             viewPager2.setPageTransformer(new MarginPageTransformer(1500));
+            Log.d("TransactionViewHolder", "onBind()...");
         }
 
         @Override
         public void onClick(View v) {
-            Log.d("Recycler Adapter", "OnClick");
+            Log.d("TransactionViewHolder", "OnClick");
         }
     }
 }

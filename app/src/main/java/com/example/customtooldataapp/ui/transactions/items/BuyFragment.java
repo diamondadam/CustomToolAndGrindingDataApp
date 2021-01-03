@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.ui.transactions.itemfragments;
+package com.example.customtooldataapp.ui.transactions.items;
 
 import android.os.Bundle;
 
@@ -12,17 +12,17 @@ import com.example.customtooldataapp.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link PicksFragment#newInstance} factory method to
+ * Use the {@link BuyFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PicksFragment extends Fragment {
+public class BuyFragment extends Fragment {
 
-    public PicksFragment() {
+    public BuyFragment() {
         // Required empty public constructor
     }
 
-    public static PicksFragment newInstance() {
-        PicksFragment fragment = new PicksFragment();
+    public static BuyFragment newInstance() {
+        BuyFragment fragment = new BuyFragment();
 /*        Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -41,6 +41,6 @@ public class PicksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_picks, container, false);
+        return inflater.inflate(R.layout.fragment_buys, container, false);
     }
 }

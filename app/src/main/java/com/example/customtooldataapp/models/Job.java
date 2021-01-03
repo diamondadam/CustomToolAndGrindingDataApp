@@ -1,44 +1,47 @@
-package com.example.customtooldataapp.data.model;
+package com.example.customtooldataapp.models;
+
+import androidx.room.Ignore;
 
 public class Job {
 
     private String jobId;
 
     // Job Data tab
-    private String orderDate;
-    private String nextDeliveryDate;
-    private String jobName;
-    private String description;
-    private String drawing;
-    private String revision;
+    private String orderDate = "";
+    private String nextDeliveryDate = "";
+    private String jobName = "";
+    private String description = "";
+    private String drawing = "";
+    private String revision = "";
 
     // Quantities Tab
-    private int orderQty;
-    private int makeQty;
-    private int pickQty;
-    private int inProductionQty;
-    private int completedQty;
-    private int shippedQty;
+    private int orderQty = 0;
+    private int makeQty = 0;
+    private int pickQty = 0;
+    private int inProductionQty = 0;
+    private int completedQty = 0;
+    private int shippedQty = 0;
 
     // Customer Data
-    private String customer;
-    private String purchaseOrder;
-    private String poLine;
-    private String shipTo;
-    private String address;
+    private String customer = "";
+    private String purchaseOrder = "";
+    private String poLine = "";
+    private String shipTo = "";
+    private String address = "";
 
     // Pick or Buy
-    private String materialRequisition;
-    private String material;
-    private String pickDescription;
-    private int qtyRequired;
-    private int qtyPicked;
-    private String pickStatus;
-    private String notes;
+    private String materialRequisition = "";
+    private String material = "";
+    private String pickDescription = "";
+    private int qtyRequired = 0;
+    private int qtyPicked = 0;
+    private String pickStatus = "";
+    private String notes = "";
 
     public Job(String jobId) {
         this.jobId = jobId;
     }
+
 
     public String getOrderDate() {
         return orderDate;

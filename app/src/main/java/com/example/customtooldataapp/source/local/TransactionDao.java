@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 
-import com.example.customtooldataapp.data.model.Transaction;
+import com.example.customtooldataapp.models.Transaction;
 
 import java.util.List;
 

@@ -1,13 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.settings.SettingsFragment">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="vertical"
+        android:padding="5dp">
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/auto_setup_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="Auto Setup" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- Automatically log out of setup." />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/quick_punch_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quick Punch Out" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- Enables quick punch out feature. -WARNING does not add quantities for job." />
+    </LinearLayout>
 </FrameLayout>

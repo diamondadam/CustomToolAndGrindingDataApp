@@ -1,4 +1,4 @@
-package com.example.customtooldataapp.ui.transactions.itemfragments;
+package com.example.customtooldataapp.ui.transactions.items;
 
 import android.os.Bundle;
 
@@ -13,14 +13,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.data.model.Transaction;
+import com.example.customtooldataapp.models.Transaction;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link TimesFragment#newInstance} factory method to
+ * Use the {@link TimeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TimesFragment extends Fragment implements View.OnClickListener {
+public class TimeFragment extends Fragment implements View.OnClickListener {
 
     private String remainingSetup;
     private String remainingRuntime;
@@ -28,12 +28,13 @@ public class TimesFragment extends Fragment implements View.OnClickListener {
     private String setup;
     private String runtime;
 
-    public TimesFragment() {
+    public TimeFragment() {
         // Required empty public constructor
     }
 
-    public static TimesFragment newInstance(Transaction transaction) {
-        TimesFragment fragment = new TimesFragment();
+    public static TimeFragment newInstance(Transaction transaction) {
+        Log.d("TimeFrag newInstance()", "Here");
+        TimeFragment fragment = new TimeFragment();
         Bundle args = new Bundle();
 
         args.putString("Remaining Setup", String.valueOf(transaction.getOperation().getRemainingSetupTime()));
