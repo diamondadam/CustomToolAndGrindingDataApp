@@ -5,35 +5,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
 import android.annotation.SuppressLint;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.services.WebService;
+import com.example.customtooldataapp.services.GetStatus;
 import com.example.customtooldataapp.source.TransactionRepository;
-import com.example.customtooldataapp.source.local.TransactionRoomDatabase;
 import com.example.customtooldataapp.ui.transactions.TransactionsFragmentDirections;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -49,8 +43,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final ExecutorService executorService =
             Executors.newFixedThreadPool(4);
 
-    Menu optionsMenu;
-    MenuItem refreshItem;
+    private MenuItem refreshItem;
+    private TextView navigationHeaderTitle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         SharedPreferences sharedPreferences = getSharedPreferences("Employee Identification", MODE_PRIVATE);
         empID = sharedPreferences.getString("ID", "");
-        Intent i = new Intent(this, WebService.class);
-
+        Intent i = new Intent(this, GetStatus.class);
         this.startService(i);
 
         //Toolbar Initialization
@@ -71,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
 
         appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.transactionsFragment)
@@ -87,9 +82,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 navController.navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStartFragment(empID));
+                addTransaction.setVisibility(View.GONE);
             }
         });
 
+        timesObserver();
     }
 
     @Override
@@ -97,8 +94,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-
-        optionsMenu = menu;
         refreshItem = menu.findItem(R.id.action_sync);
         return true;
     }
@@ -126,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.d("onNavigationItemSelect", "R.id.operation_start");
                 Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStartFragment(empID));
                 drawerLayout.closeDrawer(GravityCompat.START);
+                break;
+            case R.id.clock_in_and_out:
+                Log.d("onNavigationItemSelect", "R.id.clock_in_and_out");
                 break;
             default:
                 Log.d("onNavigationItemSelect", "default");
@@ -179,12 +177,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         refreshItem.setActionView(null);
     }
 
+    public void timesObserver(){
+        TransactionRepository.getInstance(getApplication()).getTimes().observe(this, times -> {
+            Log.d("timesObserver", "...Updating times");
+            if(times.size() > 0){
+                String time = times.get(times.size()-1).getDate();
+                if(time != null){
+                    navigationHeaderTitle = findViewById(R.id.clock_in_and_out_text);
+                    Log.d("Times Observer", time);
+                    navigationHeaderTitle.setText(time);
+                }
+            }
+        });
+    }
     public void startSync() {
         Log.d("startSync", "Starting...");
         //Start sync animation
         syncAnimationStart();
         executorService.execute(() -> {
-            TransactionRepository.getInstance(getApplication()).syncDatabases();
+            TransactionRepository.getInstance(getApplication()).updateTransactions();
             this.runOnUiThread(new Runnable(){
                @Override
                public void run() {

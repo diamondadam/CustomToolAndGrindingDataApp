@@ -1,13 +1,21 @@
 package com.example.customtooldataapp.ui.opstart;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Vibrator;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,6 +25,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -25,14 +34,13 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 
 import com.example.customtooldataapp.R;
-import com.example.customtooldataapp.ui.opstop.OperationStopFragment;
 
 import java.io.IOException;
 
 
 public class OperationStartFragment extends Fragment {
-    private static final String EMP_ID = "Employee Id";
-    private static final String OPERATION_ID = "Operation Id";
+    private static final int CAMERA_PERMISSION_CODE = 100;
+    private static final int VIBRATE_PERMISSION_CODE = 200;
 
     private String employeeId;
     private String operationId;
@@ -64,31 +72,69 @@ public class OperationStartFragment extends Fragment {
         }
     }
 
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_operation_start, container, false);
-        WebView webView = view.findViewById(R.id.operation_start_web_view);
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-
-        webView.loadUrl("http://10.10.8.4/dcmobile2/");
-        OpStartWebViewClient opStartWebViewClient = new OpStartWebViewClient(employeeId, operationId);
-        webView.setWebViewClient(opStartWebViewClient);
+        View view = inflater.inflate(R.layout.fragment_operation_start, container, false);
+        displayBarcodeScanner(view);
         return view;
     }
-/*
-    private void displayBarcode(){
 
-        surfaceview = (SurfaceView)findViewById(R.id.surfaceView2);
-        textView = (TextView) findViewById(R.id.opId);
 
-        barcodeDetector = new BarcodeDetector.Builder(this)
+    // Function to check and request permission
+    public void checkPermission(String permission, int requestCode){
+        if (ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[] { permission }, requestCode);
+        } else {
+            Toast.makeText(getContext(), "Permission already granted", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            // Checking whether user granted the permission or not.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getContext(), "Camera Permission Granted", Toast.LENGTH_SHORT).show();
+                displayBarcodeScanner(getView());
+            } else {
+                Toast.makeText(getContext(), "Camera Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }else if (requestCode == VIBRATE_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getContext(), "Storage Permission Granted", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(getContext(), "Storage Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void displayBarcodeScanner(View view){
+        String opCode = null;
+        surfaceview = view.findViewById(R.id.camera_surface_view);
+        textView = view.findViewById(R.id.opId);
+        Button startButton = view.findViewById(R.id.op_start_button);
+        startButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(opCode != null && opCode.length() == 7 && opCode.matches("[0-9]+")){
+                    startWebView(view, opCode);
+                }else{
+                    Toast.makeText(getContext(), "Wrong format!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        barcodeDetector = new BarcodeDetector.Builder(getContext())
                 .setBarcodeFormats((Barcode.CODE_128)).build();
 
-        cameraSource = new CameraSource.Builder(this, barcodeDetector)
+        cameraSource = new CameraSource.Builder(getContext(), barcodeDetector)
                 .setRequestedPreviewSize(640, 480)
                 .setAutoFocusEnabled(true)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
@@ -99,16 +145,18 @@ public class OperationStartFragment extends Fragment {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 try {
-                    cameraSource.start(holder);
+                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        checkPermission(Manifest.permission.CAMERA, CAMERA_PERMISSION_CODE);
+                    }else{
+                        cameraSource.start(holder);
+                    }
                 }catch(IOException e){
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-            }
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
@@ -126,8 +174,7 @@ public class OperationStartFragment extends Fragment {
 
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
-
-                SparseArray<Barcode> barCodes = detections.getDetectedItems();
+                SparseArray<Barcode> barCodes= detections.getDetectedItems();
                 if(barCodes.size() > 0) {
                     if (i == 0) {
                         textView.setText(barCodes.valueAt(0).displayValue);
@@ -149,7 +196,13 @@ public class OperationStartFragment extends Fragment {
             }
         });
     }
-*/
 
-
+    private void startWebView(View view, String operationId){
+        WebView webView = view.findViewById(R.id.operation_start_web_view);
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webView.loadUrl("http://10.10.8.4/dcmobile2/");
+        OpStartWebViewClient opStartWebViewClient = new OpStartWebViewClient(employeeId, operationId);
+        webView.setWebViewClient(opStartWebViewClient);
+    }
 }

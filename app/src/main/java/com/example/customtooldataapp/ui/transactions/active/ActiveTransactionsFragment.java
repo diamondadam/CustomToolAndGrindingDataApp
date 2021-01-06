@@ -13,9 +13,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.customtooldataapp.R;
 import com.example.customtooldataapp.adapters.TransactionRecyclerAdapter;
+import com.example.customtooldataapp.source.TransactionRepository;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +27,7 @@ import com.example.customtooldataapp.adapters.TransactionRecyclerAdapter;
 public class ActiveTransactionsFragment extends Fragment {
 
     private TransactionRecyclerAdapter transactionRecyclerAdapter;
+    private String time;
 
     public ActiveTransactionsFragment() {
         // Required empty public constructor

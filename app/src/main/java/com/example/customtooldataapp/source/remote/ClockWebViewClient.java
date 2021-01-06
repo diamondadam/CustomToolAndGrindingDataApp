@@ -1,20 +1,16 @@
-package com.example.customtooldataapp.ui.opstart;
+package com.example.customtooldataapp.source.remote;
 
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class OpStartWebViewClient extends WebViewClient {
-    private final String operationId;
+public class ClockWebViewClient extends WebViewClient {
     private final String employeeId;
 
-    public OpStartWebViewClient(String employeeId, String operationId){
+    public ClockWebViewClient(String employeeId){
         super();
-
         this.employeeId = employeeId;
-        this.operationId = operationId;
     }
-
 
 
     @Override
@@ -29,24 +25,10 @@ public class OpStartWebViewClient extends WebViewClient {
             view.evaluateJavascript(js, s -> {});
         }else if (url.contains("Home.aspx")){
             Log.d("opStart" , "Home.aspx");
-
             final String js = "javascript:" +
-                    " document.evaluate( '/html/body/form/div[3]/div/div[2]/ul[1]/li[3]/ul/li[1]/a" +
-                    "' ,document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null )" +
-                    ".singleNodeValue.click()";
-
-            view.evaluateJavascript(js, s -> {});
-        }else if(url.contains("OperationStart.aspx")){
-            Log.d("opStart" , "OperationStart.aspx");
-
-            final String js = "javascript:" +
-                    "document.getElementById('txtOpKey_I').value = '" + operationId + "';" +
-                    "document.getElementById('MainContent_btnOpStart').click()";
-
+                    "document.getElementById('ctl00$MainContent$btnEmpClock').click()";
             view.evaluateJavascript(js, s -> {});
         }
-
         super.onPageFinished(view, url);
     }
-
 }

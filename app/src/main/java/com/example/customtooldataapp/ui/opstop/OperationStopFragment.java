@@ -41,7 +41,6 @@ public class OperationStopFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view =  inflater.inflate(R.layout.fragment_operation_stop, container, false);
         WebView webView = view.findViewById(R.id.operation_stop_web_view);
         WebSettings webSettings = webView.getSettings();

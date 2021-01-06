@@ -3,6 +3,7 @@ package com.example.customtooldataapp.source.remote;
 import android.util.Log;
 import android.util.Pair;
 
+import com.example.customtooldataapp.models.ClockInAndOut;
 import com.example.customtooldataapp.models.Job;
 import com.example.customtooldataapp.models.Operation;
 import com.example.customtooldataapp.models.Transaction;
@@ -17,9 +18,14 @@ import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
@@ -31,6 +37,7 @@ import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 //TODO handle PICK AND BUY exceptions
 //TODO grab Date data
@@ -43,6 +50,7 @@ public class JobBossClient {
     private static final String DEFAULT = "/Default.aspx";
     private static final String JOB_ENTRIES = "/JobEntries.aspx";
     private static final String JOB_DETAILS = "/JobDetails.aspx";
+
     private List<HttpCookie> cookieList;
     private HttpURLConnection conn;
     private String urlBase = "http://10.10.8.4/dcmobile2/";
@@ -128,6 +136,18 @@ public class JobBossClient {
         return transactions;
     }
 
+    public ClockInAndOut getClockInOutTime() throws ConnectionError {
+
+        //Begin connecting
+        initializeConnection();
+
+        //Login to website and grab time
+        ClockInAndOut clockInAndOut = new ClockInAndOut(login());
+        Log.d("getClockInOutTime()", clockInAndOut.getDate() + clockInAndOut.getDay());
+        return clockInAndOut;
+
+    }
+
     /**
      * Establishes initial connection to set the session id and cookies
      */
@@ -162,7 +182,7 @@ public class JobBossClient {
      * Logs the employee into the website
      * @throws IOException If there is a IOConnection pertaining to the Server such as timeout
      */
-    private void login() throws ConnectionError {
+    private String login() throws ConnectionError {
         OkHttpClient client = new OkHttpClient();
 
         RequestBody requestBody = new MultipartBody.Builder()
@@ -188,6 +208,9 @@ public class JobBossClient {
 
         try{
             client.newCall(request).execute();
+            Document document = Jsoup.parse(getPageContent(HOME));
+            Element element = document.getElementById("MainContent_lblClockInMessage");
+            return element.text();
         }catch(IOException e){
             throw new ConnectionError("Login Error");
         }
@@ -483,11 +506,12 @@ public class JobBossClient {
                     break;
 
                 case 6:
-                    op.setRemainingRuntime(Float.parseFloat(elements.get(i).text()));
+                    op.setRemainingSetupTime(Float.parseFloat(elements.get(i).text()));
                     break;
 
                 case 7:
-                    op.setRemainingSetupTime(Float.parseFloat(elements.get(i).text()));
+
+                    op.setRemainingRuntime(Float.parseFloat(elements.get(i).text()));
                     break;
 
                 case 8:
@@ -577,6 +601,7 @@ public class JobBossClient {
             }
         }
     }
+
 
 }
 

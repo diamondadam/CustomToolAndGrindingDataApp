@@ -13,17 +13,14 @@ import android.webkit.WebView;
 
 import androidx.annotation.Nullable;
 
+import com.example.customtooldataapp.source.TransactionRepository;
 import com.example.customtooldataapp.ui.opstart.OpStartWebViewClient;
 
-public class WebService extends Service {
+//TODO set up service
+public class GetStatus extends Service {
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        final WebView webView = new WebView(this);
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webView.loadUrl("http://10.10.8.4/dcmobile2/");
-        webView.setWebViewClient(new OpStartWebViewClient("", ""));
         return flags;
     }
 

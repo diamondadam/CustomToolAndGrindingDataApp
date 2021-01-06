@@ -1,40 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="bottom"
     tools:context=".ui.opstart.OperationStartFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="bottom">
 
         <SurfaceView
-            android:id="@+id/surfaceView2"
+            android:id="@+id/camera_surface_view"
             android:layout_width="match_parent"
-            android:layout_height="350dp" />
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/opId"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/opId"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_margin="20dp"
+            android:layout_margin="5dp"
             android:fitsSystemWindows="true"
             android:gravity="center"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            app:layout_constraintBottom_toTopOf="@+id/op_start_button"
+            tools:layout_editor_absoluteX="5dp" />
 
         <Button
-            android:id="@+id/submitButton"
+            android:id="@+id/op_start_button"
             android:layout_width="match_parent"
             android:layout_height="75dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginBottom="50dp"
             android:fitsSystemWindows="true"
             android:padding="20dp"
-            android:text="Submit" />
+            android:text="Submit"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <WebView
         android:id="@+id/operation_start_web_view"

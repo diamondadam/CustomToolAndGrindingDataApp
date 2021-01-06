@@ -83,10 +83,10 @@ public class QuantityFragment extends Fragment implements View.OnClickListener {
         TextView shippedQtyWidget = layout.findViewById(R.id.shipped_qty);
 
         orderQtyWidget.setText(String.format("Order Qty: %s", orderQty));
-        inProductionQtyWidget.setText(String.format("In Production Qty: %s", inProductionQty));
+        inProductionQtyWidget.setText(String.format("Prod Qty: %s", inProductionQty));
 
         makeQtyWidget.setText(String.format("Make Qty: %s", makeQty));
-        operationQtyCompletedWidget.setText(String.format("Completed Qty: %s", operationQtyCompleted));
+        operationQtyCompletedWidget.setText(String.format("Comp Qty: %s", operationQtyCompleted));
 
         pickQtyWidget.setText(String.format("Pick Qty: %s", pickQty));
         shippedQtyWidget.setText(String.format("Shipped Qty: %s", shippedQty));
