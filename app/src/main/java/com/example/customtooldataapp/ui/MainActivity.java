@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.customtooldataapp.R;
+import com.example.customtooldataapp.models.ClockInAndOut;
 import com.example.customtooldataapp.services.GetStatus;
 import com.example.customtooldataapp.source.TransactionRepository;
 import com.example.customtooldataapp.ui.transactions.TransactionsFragmentDirections;
@@ -186,10 +187,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     navigationHeaderTitle = findViewById(R.id.clock_in_and_out_text);
                     Log.d("Times Observer", time);
                     navigationHeaderTitle.setText(time);
+                    for(ClockInAndOut c : times){
+                        Log.d("TimesObserver", c.getDate());
+                    }
                 }
             }
         });
     }
+
     public void startSync() {
         Log.d("startSync", "Starting...");
         //Start sync animation

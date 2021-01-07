@@ -3,12 +3,17 @@ package com.example.customtooldataapp.ui.hours;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.customtooldataapp.R;
+import com.example.customtooldataapp.adapters.TransactionRecyclerAdapter;
+import com.example.customtooldataapp.ui.transactions.active.ActiveTransactionsViewModel;
+import com.example.customtooldataapp.ui.transactions.active.ActiveTransactionsViewModelFactory;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -45,9 +50,15 @@ public class YourHoursFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        YourHoursViewModel model = new ViewModelProvider(this,
+                new YourHoursViewModelFactory(this.getActivity().getApplication()))
+                .get(YourHoursViewModel.class);
+        Log.d("YourHoursFragment", "OnCreate");
+        model.getPunchCards().observe(this, transactions -> {
+            Log.d("YourHoursFragment", "...getting times");
 
-        }
+        });
+
     }
 
     @Override

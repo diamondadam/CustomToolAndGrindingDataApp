@@ -24,10 +24,10 @@ public abstract class ClockRoomDatabase extends RoomDatabase {
 
     public static ClockRoomDatabase getDatabase(final Context context){
         if(INSTANCE == null){
-            synchronized (TransactionRoomDatabase.class){
+            synchronized (ClockRoomDatabase.class){
                 if(INSTANCE == null){
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            ClockRoomDatabase.class, "day_database").build();
+                            ClockRoomDatabase.class, "clock_database").build();
                 }
             }
         }

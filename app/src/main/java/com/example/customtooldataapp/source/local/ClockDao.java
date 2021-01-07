@@ -19,5 +19,8 @@ public interface ClockDao {
     LiveData<List<ClockInAndOut>> selectAll(String day);
 
     @Query("SELECT * FROM clock_in_and_out_table WHERE day = :day")
+    List<ClockInAndOut> selectByDay(String day);
+
+    @Query("SELECT * FROM clock_in_and_out_table WHERE day = :day")
     ClockInAndOut selectOne(String day);
 }

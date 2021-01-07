@@ -16,11 +16,9 @@ import com.example.customtooldataapp.source.local.TransactionDao;
 import com.example.customtooldataapp.source.local.TransactionRoomDatabase;
 import com.example.customtooldataapp.source.remote.JobBossClient;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -57,11 +55,10 @@ public class TransactionRepository {
         clockDao = cDb.clockDao();
 
         JobBossClient jobBossClient = new JobBossClient(employeeId);
-
+        updateClock();
         TransactionRoomDatabase.databaseWriteExecutor.execute(() -> {
             try {
                 syncDatabases(jobBossClient.getTransactions());
-                updateClock();
             } catch (ConnectionError connectionError) {
                 transactionDao.insertList(setErrorData(connectionError));
                 currentTransactions = transactionDao.loadTransactions("No");
@@ -76,28 +73,52 @@ public class TransactionRepository {
         pastTransactions = transactionDao.loadTransactions("Yes");
     }
 
-    public void updateClock() throws ConnectionError {
+    public void updateClock() {
         JobBossClient jobBossClient = new JobBossClient(employeeId);
-        clockDao.insert(jobBossClient.getClockInOutTime());
-        setTimes();
+        String str = new SimpleDateFormat("dd-MM-yyyy", Locale.US).format(new Date());
+        ClockRoomDatabase.databaseWriteExecutor.execute(() ->{
+            try {
+                clockDao.insert(jobBossClient.getClockInOutTime());
+                times = clockDao.selectAll(str);
+                Log.d("UpdateClock", "Trying for each");
+                if(times.getValue() != null){
+                    Log.d("UpdateClock", "Starting for each");
+                    for(ClockInAndOut clockInAndOut: times.getValue()){
+                        Log.d("UpdateClock", clockInAndOut.getDate());
+                    }
+                }else{
+                    Log.d("UpdateClock", "Null");
+                }
+
+
+
+            } catch (ConnectionError connectionError) {
+                connectionError.printStackTrace();
+            }
+        });
+        times = clockDao.selectAll(str);
     }
 
-    public LiveData<List<ClockInAndOut>> setTimes(){
-        String str = new SimpleDateFormat("dd-MM-yyyy", Locale.US).format(new Date());
-        return clockDao.selectAll(str);
+    public List<ClockInAndOut> getPunchCard(String day) {
+        return clockDao.selectByDay(day);
     }
 
     public LiveData<List<ClockInAndOut>> getTimes() {
         if(times == null){
-           times = instance.setTimes();
+           Log.d("Error", "Times equals null!");
         }
+        if(times.getValue() != null){
+            for(ClockInAndOut clockInAndOut: times.getValue()){
+                Log.d("getTimes", clockInAndOut.getDate());
+            }
+        }
+
         return times;
     }
 
     public void updateTransactions() {
         try {
             List<Transaction> remoteTransactions = new JobBossClient(employeeId).getTransactions();
-            updateClock();
             syncDatabases(remoteTransactions);
         } catch (ConnectionError connectionError) {
             Log.d("syncDatabases()", "Error getTransactions()...");
@@ -112,7 +133,7 @@ public class TransactionRepository {
         Log.d("syncDatabases()", "Executing getTransactions()...");
 
         List<Transaction> localTransactions = transactionDao.selectAll();
-
+        updateClock();
         Log.d("syncDatabases()", "Filtering database...");
         if (remoteTransactions.isEmpty()) {
             transactionDao.deleteAllJobs();
