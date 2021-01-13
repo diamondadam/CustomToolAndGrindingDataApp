@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.customtooldataapp">
+    package="com.customtoolandgrinding.customtooldataapp">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -15,10 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CustomToolDataApp"
         android:usesCleartextTraffic="true">
-        <service android:name=".services.GetStatus" />
-
+        <service android:name=".services.PunchOutService" />
+        <service android:name=".services.PunchInService" />
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name="com.customtoolandgrinding.customtooldataapp.ui.login.LoginActivity"
             android:label="@string/title_activity_login"
             android:noHistory="true">
             <intent-filter>
@@ -26,7 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.MainActivity" />
+        <activity android:name="com.customtoolandgrinding.customtooldataapp.ui.MainActivity" />
     </application>
 
 </manifest>

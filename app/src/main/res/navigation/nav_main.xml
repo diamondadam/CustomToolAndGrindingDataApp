@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/transactionsFragment"
-        android:name="com.example.customtooldataapp.ui.transactions.TransactionsFragment"
+        android:name="com.customtoolandgrinding.customtooldataapp.ui.transactions.TransactionsFragment"
         tools:layout="@layout/fragment_transactions">
         <action
             android:id="@+id/action_transactionsFragment_to_operationStartFragment"
@@ -24,13 +24,16 @@
     </fragment>
     <fragment
         android:id="@+id/operationStartFragment"
-        android:name="com.example.customtooldataapp.ui.opstart.OperationStartFragment"
+        android:name="com.customtoolandgrinding.customtooldataapp.ui.opstart.OperationStartFragment"
         tools:layout="@layout/fragment_operation_start">
         <argument android:name="employee_id" />
+        <action
+            android:id="@+id/action_operationStartFragment_to_transactionsFragment"
+            app:destination="@id/transactionsFragment" />
     </fragment>
     <fragment
         android:id="@+id/operationStopFragment"
-        android:name="com.example.customtooldataapp.ui.opstop.OperationStopFragment"
+        android:name="com.customtoolandgrinding.customtooldataapp.ui.opstop.OperationStopFragment"
         tools:layout="@layout/fragment_operation_stop">
 
         <argument
@@ -39,10 +42,10 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment2"
-        android:name="com.example.customtooldataapp.ui.settings.SettingsFragment"
+        android:name="com.customtoolandgrinding.customtooldataapp.ui.settings.SettingsFragment"
         tools:layout="@layout/fragment_settings" />
     <fragment
         android:id="@+id/yourHoursFragment"
-        android:name="com.example.customtooldataapp.ui.hours.YourHoursFragment"
+        android:name="com.customtoolandgrinding.customtooldataapp.ui.hours.YourHoursFragment"
         tools:layout="@layout/fragment_your_hours" />
 </navigation>
