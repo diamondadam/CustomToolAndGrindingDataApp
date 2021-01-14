@@ -46,8 +46,11 @@ public class OperationStopFragment extends Fragment {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webView.loadUrl("http://10.10.8.4/dcmobile2/");
-        OpStopWebViewClient opStopWebViewClient = new OpStopWebViewClient(employeeId, transactionPath);
+        OpStopWebViewClient opStopWebViewClient = new OpStopWebViewClient(employeeId, transactionPath, getActivity().getApplication());
         webView.setWebViewClient(opStopWebViewClient);
+        //TODO Sync database and spin sync button
+        MainActivity activity = (MainActivity) getActivity();
+        activity.startSync();
         return view;
     }
 }

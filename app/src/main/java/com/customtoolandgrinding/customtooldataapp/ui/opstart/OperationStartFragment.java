@@ -52,7 +52,6 @@ public class OperationStartFragment extends Fragment {
     private TextView textView;
     private BarcodeDetector barcodeDetector;
     private Vibrator vib;
-
     private int i = 0;
     private String prevBarcode = "";
 
@@ -208,8 +207,10 @@ public class OperationStartFragment extends Fragment {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webView.loadUrl("http://10.10.8.4/dcmobile2/");
-        OpStartWebViewClient opStartWebViewClient = new OpStartWebViewClient(employeeId, operationId);
+        OpStartWebViewClient opStartWebViewClient = new OpStartWebViewClient(employeeId, operationId, getActivity().getApplication());
         webView.setWebViewClient(opStartWebViewClient);
-
+        //TODO Sync database and spin sync button
+        MainActivity activity = (MainActivity) getActivity();
+        activity.startSync();
     }
 }

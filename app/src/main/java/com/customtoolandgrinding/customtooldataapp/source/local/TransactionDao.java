@@ -38,4 +38,7 @@ public interface TransactionDao {
 
     @Query("DELETE FROM transaction_table WHERE tranID = :transactionId")
     void deleteOne(String transactionId);
+
+    @Query("DELETE FROM transaction_table WHERE transactionPath = :transactionPath")
+    void deleteTransactionByPath(String transactionPath);
 }

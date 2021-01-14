@@ -200,7 +200,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void timesObserver(){
         transactionRepository.getPunchHoles().observe(this, punchHoles -> {
             if(punchHoles.size() > 0){
-                String time = punchHoles.get(punchHoles.size()-1).getDate();
+                String time;
+                if(punchHoles.get(punchHoles.size()-1).getPrefix()){
+                    time = "Clock In Time: " + punchHoles.get(punchHoles.size()-1).getDate();
+                }else{
+                    time = "Clock Out Time: " + punchHoles.get(punchHoles.size()-1).getDate();
+                }
+
                 if(time != null){
                     try{
                         navigationHeaderTitle = findViewById(R.id.clock_in_and_out_text);
@@ -218,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Start sync animation
         syncAnimationStart();
         executorService.execute(() -> {
-            transactionRepository.updateTransactions();
+            transactionRepository.syncButtonPressed();
             this.runOnUiThread(new Runnable(){
                @Override
                public void run() {
@@ -228,4 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    public MenuItem getRefreshItem(){
+        return refreshItem;
+    }
 }

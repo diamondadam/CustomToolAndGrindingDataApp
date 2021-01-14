@@ -1,21 +1,23 @@
 package com.customtoolandgrinding.customtooldataapp.ui.opstart;
 
+import android.app.Application;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.customtoolandgrinding.customtooldataapp.source.TransactionRepository;
+
 public class OpStartWebViewClient extends WebViewClient {
     private final String operationId;
     private final String employeeId;
+    private final Application application;
 
-    public OpStartWebViewClient(String employeeId, String operationId){
+    public OpStartWebViewClient(String employeeId, String operationId, Application application){
         super();
-
+        this.application = application;
         this.employeeId = employeeId;
         this.operationId = operationId;
     }
-
-
 
     @Override
     public void onPageFinished(WebView view, String url) {
@@ -42,11 +44,21 @@ public class OpStartWebViewClient extends WebViewClient {
             final String js = "javascript:" +
                     "document.getElementById('txtOpKey_I').value = '" + operationId + "';" +
                     "document.getElementById('MainContent_btnOpStart').click()";
-
             view.evaluateJavascript(js, s -> {});
+        }else if(url.contains("JobEntries.aspx")){
+            Log.d("opStart" , "JobEntries.aspx");
+
+            Log.d("opStop" , "JobEntries.aspx");
+            view.destroy();
+            updateTransactions();
         }
 
         super.onPageFinished(view, url);
+    }
+
+    private void updateTransactions(){
+        TransactionRepository transactionRepository = TransactionRepository.getInstance(application);
+        transactionRepository.updateTransactions();
     }
 
 }
