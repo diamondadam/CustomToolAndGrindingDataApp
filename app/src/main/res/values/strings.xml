@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CustomToolDataApp</string>
+    <string name="app_name">Custom Tool and Grinding Data App</string>
     <string name="current">Current</string>
     <string name="old">Old</string>
     <string name="settings">Settings</string>
