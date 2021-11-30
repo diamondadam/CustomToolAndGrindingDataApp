@@ -27,7 +27,7 @@ public class PunchOutService extends Service{
         SharedPreferences sharedPreferences = getSharedPreferences("Employee Identification", MODE_PRIVATE);
         String empID = sharedPreferences.getString("ID", "");
 
-        if(transactionRepository.getActiveTransactions() == null){
+        if(transactionRepository.getActiveTransactions().getValue() == null || transactionRepository.getActiveTransactions().getValue().size() <= 0){
             webView.loadUrl("http://10.10.8.4/dcmobile2/");
             webView.setWebViewClient(new PunchOutWebViewClient(empID));
         }else{
@@ -42,29 +42,28 @@ public class PunchOutService extends Service{
         return null;
     }
 
-
     public class PunchOutWebViewClient extends WebViewClient {
-        private final String employeeId;
+        private final String employeeID;
 
-        public PunchOutWebViewClient(String employeeId){
+        public PunchOutWebViewClient(String employeeID){
             super();
-            this.employeeId = employeeId;
+            this.employeeID = employeeID;
         }
 
 
         @Override
         public void onPageFinished(WebView view, String url) {
             if(url.contains("Default.aspx")){
-                Log.d("opStart" , "Default.aspx");
-
                 final String js = "javascript:" +
-                        "document.getElementById('MainContent_txtLogin').value = '" + employeeId + "';" +
+                        "document.getElementById('MainContent_txtLogin').value = '" + employeeID + "';" +
                         "document.getElementById('MainContent_btnLogin').click()";
+
                 view.evaluateJavascript(js, s -> {});
+
             }else if (url.contains("Home.aspx")){
-                Log.d("opStart" , "Home.aspx");
                 final String js = "javascript:" +
                         "document.getElementById('ctl00$MainContent$btnEmpClock').click()";
+
                 view.evaluateJavascript(js, s -> {});
             }
             super.onPageFinished(view, url);

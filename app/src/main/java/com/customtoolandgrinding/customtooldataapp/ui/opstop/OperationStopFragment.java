@@ -2,23 +2,19 @@ package com.customtoolandgrinding.customtooldataapp.ui.opstop;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-
 import com.customtoolandgrinding.customtooldataapp.R;
-import com.customtoolandgrinding.customtooldataapp.ui.MainActivity;
-
+import com.customtoolandgrinding.customtooldataapp.models.Transaction;
 import static android.content.Context.MODE_PRIVATE;
 
 public class OperationStopFragment extends Fragment {
-    private String employeeId;
-    private String transactionPath;
+    private String employeeID;
+    private Transaction transaction;
 
     public OperationStopFragment() {
         // Required empty public constructor
@@ -32,10 +28,10 @@ public class OperationStopFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            transactionPath = OperationStopFragmentArgs.fromBundle(getArguments()).getTransactionPath();
+            transaction = OperationStopFragmentArgs.fromBundle(getArguments()).getTransaction();
         }
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Employee Identification", MODE_PRIVATE);
-        employeeId = sharedPreferences.getString("ID", "");
+        employeeID = sharedPreferences.getString("ID", "");
     }
 
     @Override
@@ -46,11 +42,8 @@ public class OperationStopFragment extends Fragment {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webView.loadUrl("http://10.10.8.4/dcmobile2/");
-        OpStopWebViewClient opStopWebViewClient = new OpStopWebViewClient(employeeId, transactionPath, getActivity().getApplication());
+        OpStopWebViewClient opStopWebViewClient = new OpStopWebViewClient(employeeID, transaction, getActivity());
         webView.setWebViewClient(opStopWebViewClient);
-        //TODO Sync database and spin sync button
-        MainActivity activity = (MainActivity) getActivity();
-        activity.startSync();
         return view;
     }
 }

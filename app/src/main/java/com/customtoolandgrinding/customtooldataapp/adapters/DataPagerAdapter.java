@@ -19,26 +19,20 @@ public class DataPagerAdapter extends FragmentStateAdapter {
 
     public DataPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Transaction transaction) {
         super(fragmentManager, lifecycle);
-        Log.d("DataFragmentAdapter", "constuctor");
         this.transaction = transaction;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        Log.d("DataFragmentAdapter", "createFragment");
-
         switch (position) {
             case 0:
-                Log.d("DataFragmentAdapter", "0");
                 return TitleFragment.newInstance(transaction);
 
             case 1:
-                Log.d("DataFragmentAdapter", "1");
                 return QuantityFragment.newInstance(transaction);
 
             case 2:
-                Log.d("DataFragmentAdapter", "2");
                 return TimeFragment.newInstance(transaction);
 
             default:

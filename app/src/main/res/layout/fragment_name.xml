@@ -20,7 +20,6 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
 
-            android:text="Job Name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,7 +30,6 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="16dp"
 
-            android:text="Operation Name"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -50,7 +48,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:text="Job ID"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -62,11 +59,11 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
 
-            android:text="Operation Id"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:background="#0000"
             android:id="@+id/name_click_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

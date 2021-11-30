@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,16 +61,5 @@ public class TransactionsFragment extends Fragment {
         ).attach();
 
         return layout;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        try {
-            //TODO ((MainActivity) getActivity()).startSync();
-        }catch(Exception e){
-            //Do Nothing
-        }
-
     }
 }

@@ -22,4 +22,6 @@
     <string name="login_failed">"Login failed"</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="sync_now">Sync Now</string>
+    <string name="channel_name">CustomToolApp</string>
+    <string name="channel_description">Setup Notifications</string>
 </resources>

@@ -33,7 +33,7 @@ public class TimeFragment extends Fragment implements View.OnClickListener {
     }
 
     public static TimeFragment newInstance(Transaction transaction) {
-        Log.d("TimeFrag newInstance()", "Here");
+
         TimeFragment fragment = new TimeFragment();
         Bundle args = new Bundle();
 
@@ -88,6 +88,6 @@ public class TimeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Log.d("Times Fragment", "OnClick");
+
     }
 }

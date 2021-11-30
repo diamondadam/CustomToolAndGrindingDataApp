@@ -27,7 +27,6 @@ public class TransactionRecyclerAdapter extends RecyclerView.Adapter<Transaction
     private final LiveData<List<Transaction>> transactions;
 
     public TransactionRecyclerAdapter(Fragment fragment, LiveData<List<Transaction>> transactions){
-        Log.d("TransactionRecycler", "Constructor");
         this.layoutInflater = LayoutInflater.from(fragment.getContext());
         this.fragmentManager = fragment.getChildFragmentManager();
         this.lifecycle = fragment.getLifecycle();
@@ -37,7 +36,6 @@ public class TransactionRecyclerAdapter extends RecyclerView.Adapter<Transaction
     @NonNull
     @Override
     public TransactionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d("TransactionRecycler", "onCreateViewHolder");
         View transactionView = layoutInflater.inflate(R.layout.item_transaction, parent, false);
         return new TransactionViewHolder(transactionView);
     }
@@ -51,36 +49,27 @@ public class TransactionRecyclerAdapter extends RecyclerView.Adapter<Transaction
     @Override
     public int getItemCount() {
         if(transactions.getValue() == null){
-            Log.d("TransactionRecycler", "Transactions are null...");
             return 0;
         }else{
-            Log.d("TransactionRecycler", "Size: " +  transactions.getValue().size());
             return transactions.getValue().size();
         }
     }
 
 
 
-    class TransactionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    class TransactionViewHolder extends RecyclerView.ViewHolder{
         private final ViewPager2 viewPager2;
         private int position;
 
         public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
             viewPager2 = itemView.findViewById(R.id.transactionViewPager);
-            Log.d("TransactionViewHolder", "Constructor...");
         }
         public void onBind(){
             DataPagerAdapter adapter = new DataPagerAdapter(fragmentManager, lifecycle, Objects.requireNonNull(transactions.getValue()).get(position));
             viewPager2.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
             viewPager2.setAdapter(adapter);
             viewPager2.setPageTransformer(new MarginPageTransformer(1500));
-            Log.d("TransactionViewHolder", "onBind()...");
-        }
-
-        @Override
-        public void onClick(View v) {
-            Log.d("TransactionViewHolder", "OnClick");
         }
     }
 }

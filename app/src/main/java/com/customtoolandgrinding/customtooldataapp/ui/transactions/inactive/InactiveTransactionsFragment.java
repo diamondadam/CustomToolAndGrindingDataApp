@@ -33,11 +33,11 @@ public class InactiveTransactionsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("InactiveFragment", "Constructor");
+
         InactiveTransactionsViewModel model = new ViewModelProvider(this, new InactiveTransactionViewModelFactory(this.getActivity().getApplication())).get(InactiveTransactionsViewModel.class);
         transactionRecyclerAdapter = new TransactionRecyclerAdapter(this, model.getTransactions());
         model.getTransactions().observe(this, transactions -> {
-            Log.d("InactiveFragment", "Data Changed");
+
             transactionRecyclerAdapter.notifyDataSetChanged();
         });
 
@@ -45,7 +45,7 @@ public class InactiveTransactionsFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Log.d("InactiveFragment", "On View Create");
+
         RecyclerView recyclerView = view.findViewById(R.id.past_recycler);
         recyclerView.setAdapter(transactionRecyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

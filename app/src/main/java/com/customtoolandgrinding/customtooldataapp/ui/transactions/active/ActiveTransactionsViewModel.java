@@ -16,13 +16,11 @@ public class ActiveTransactionsViewModel extends ViewModel {
     private final LiveData<List<Transaction>> transactions;
 
     public ActiveTransactionsViewModel(Application application) {
-        Log.d("CurrentViewModel", "Constructor");
         TransactionRepository transactionsRepository = TransactionRepository.getInstance(application);
         transactions = transactionsRepository.getActiveTransactions();
     }
 
     public LiveData<List<Transaction>> getTransactions() {
-        Log.d("CurrentViewModel", "getTransactions()");
         return transactions;
     }
 }

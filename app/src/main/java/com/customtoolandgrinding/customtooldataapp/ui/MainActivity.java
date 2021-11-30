@@ -4,16 +4,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -25,11 +33,13 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.customtoolandgrinding.customtooldataapp.R;
 import com.customtoolandgrinding.customtooldataapp.source.TransactionRepository;
 import com.customtoolandgrinding.customtooldataapp.services.PunchInService;
 import com.customtoolandgrinding.customtooldataapp.services.PunchOutService;
+import com.customtoolandgrinding.customtooldataapp.ui.opstop.OperationStopFragment;
 import com.customtoolandgrinding.customtooldataapp.ui.transactions.TransactionsFragmentDirections;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -38,7 +48,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+    //TODO fix camera reset after permissions
+    //Todo fix animation repeat bug
+    //TODO fix Clock in and Out
+    private static final String CHANNEL_ID = "CustomTool0001";
     private AppBarConfiguration appBarConfiguration;
     private DrawerLayout drawerLayout;
     private String empID;
@@ -48,12 +61,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private MenuItem refreshItem;
     private TextView navigationHeaderTitle;
-
+    public boolean isSpinning = false;
+    private FloatingActionButton addTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         transactionRepository = TransactionRepository.getInstance(getApplication());
+        transactionRepository.syncDatabasesThreaded();
+        initNotifications();
+
         setContentView(R.layout.activity_main);
         SharedPreferences sharedPreferences = getSharedPreferences("Employee Identification", MODE_PRIVATE);
         empID = sharedPreferences.getString("ID", "");
@@ -75,27 +92,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-
+        navOnChange(navController);
         setTitle("Employee: " + empID);
 
-        FloatingActionButton addTransaction = findViewById(R.id.add_button);
+        addTransaction = findViewById(R.id.add_button);
         addTransaction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 navController.navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStartFragment(empID));
-                addTransaction.setVisibility(View.GONE);
             }
         });
 
-        timesObserver();
+        //timesObserver();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         refreshItem = menu.findItem(R.id.action_sync);
+        //Has to wait until refreshItem is initialized before running start sync the first time.
+        startSync();
         return true;
     }
 
@@ -109,43 +126,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Nullable
     @Override
     public View onCreateView(@Nullable View parent, @NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
+
         return super.onCreateView(parent, name, context, attrs);
     }
 
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Log.d("onNavigationItemSelect", "Item Selected...");
+
         int id = item.getItemId();
         switch (id) {
+            /*
             case R.id.employee_hours:
-                Log.d("onNavigationItemSelect", "R.id.employee_hours");
+
                 Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToYourHoursFragment());
                 drawerLayout.closeDrawer(GravityCompat.START);
-                break;
+                break;*/
             case R.id.operation_start:
-                Log.d("onNavigationItemSelect", "R.id.operation_start");
                 Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStartFragment(empID));
                 drawerLayout.closeDrawer(GravityCompat.START);
+                addTransaction.hide();
                 break;
+
             case R.id.clock_in_and_out:
-                executorService.execute(() ->{
-                    if(transactionRepository.isPunchedIn()){
-                        Log.d("clock_in_and_out", "Is punched in starting service");
+                executorService.execute(() -> {
+                    if (transactionRepository.isPunchedIn()) {
                         Intent i = new Intent(this, PunchOutService.class);
                         this.startService(i);
-                        Log.d("clock_in_and_out", "Is punched in past service");
-                    }else{
-                        Log.d("clock_in_and_out", "Not punched in starting service");
+                    } else {
                         Intent i = new Intent(this, PunchInService.class);
                         this.startService(i);
-                        Log.d("clock_in_and_out", "Not punched in past service");
                     }
                 });
-                Log.d("onNavigationItemSelect", "R.id.clock_in_and_out");
                 break;
+
             default:
-                Log.d("onNavigationItemSelect", "default");
                 break;
         }
         return true;
@@ -154,22 +169,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        Log.d("onOptionsItemSelected", "Here");
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Log.d("Case", "R.id.action_settings");
                 Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToSettingsFragment2());
                 return true;
             case R.id.action_sync:
-                Log.d("Case", "R.id.action_sync");
                 startSync();
                 return true;
             default:
-                Log.d("Case", "default");
                 return false;
         }
-
     }
 
     @Override
@@ -193,48 +202,75 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void syncAnimationStop() {
-        refreshItem.getActionView().clearAnimation();
-        refreshItem.setActionView(null);
+            refreshItem.getActionView().clearAnimation();
+            refreshItem.setActionView(null);
     }
 
-    public void timesObserver(){
+    public void timesObserver() {
         transactionRepository.getPunchHoles().observe(this, punchHoles -> {
-            if(punchHoles.size() > 0){
+            if (punchHoles.size() > 0) {
                 String time;
-                if(punchHoles.get(punchHoles.size()-1).getPrefix()){
-                    time = "Clock In Time: " + punchHoles.get(punchHoles.size()-1).getDate();
-                }else{
-                    time = "Clock Out Time: " + punchHoles.get(punchHoles.size()-1).getDate();
+                if (punchHoles.get(punchHoles.size() - 1).getPrefix()) {
+                    time = "Clock In Time: " + punchHoles.get(punchHoles.size() - 1).getDate();
+                } else {
+                    time = "Clock Out Time: " + punchHoles.get(punchHoles.size() - 1).getDate();
                 }
 
-                if(time != null){
-                    try{
+                if (time != null) {
+                    try {
                         navigationHeaderTitle = findViewById(R.id.clock_in_and_out_text);
                         navigationHeaderTitle.setText(time);
-                    }catch(Exception e){
-                        //Do nothing
+                    } catch (Exception e) {
+                        //Do nothing things are still loading
                     }
                 }
             }
         });
     }
 
-    public void startSync() {
-        Log.d("startSync", "Starting...");
-        //Start sync animation
-        syncAnimationStart();
-        executorService.execute(() -> {
-            transactionRepository.syncButtonPressed();
-            this.runOnUiThread(new Runnable(){
-               @Override
-               public void run() {
-                   syncAnimationStop();
-               }
-            });
-        });
+    public void initNotifications() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
     }
 
-    public MenuItem getRefreshItem(){
-        return refreshItem;
+    public void startSync() {
+        try {
+            //Start sync animation
+            syncAnimationStart();
+            executorService.execute(() -> {
+                transactionRepository.syncDatabases();
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        syncAnimationStop();
+                    }
+                });
+            });
+        } catch (NullPointerException e) {
+            // Do nothing things are messing up
+        }
+    }
+
+    public void navOnChange(NavController navController){
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if(destination.getId() == R.id.operationStartFragment) {
+                addTransaction.hide();
+            } else if(destination.getId() == R.id.transactionsFragment){
+                //startSync();
+                if(addTransaction != null){addTransaction.show();}
+            }
+        });
     }
 }

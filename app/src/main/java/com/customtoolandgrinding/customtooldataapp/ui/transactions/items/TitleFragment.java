@@ -70,24 +70,17 @@ public class TitleFragment extends Fragment implements View.OnClickListener {
         TextView jobIdWidget = layout.findViewById(R.id.JobId);
         TextView operationIdWidget = layout.findViewById(R.id.OperationId);
         TextView errorText = layout.findViewById(R.id.name_error_text);
-        Log.d("Job Name: ", jobName);
-        Log.d("Job Id: ", jobId);
 
-        Log.d("Operation Name: ", operationName);
-        Log.d("Operation Id: ", operationId);
-
-        if(transaction.getErrorMessage().equals("")){
-            jobNameWidget.setText(jobName);
-            operationNameWidget.setText(operationName);
-            jobIdWidget.setText(jobId);
-            operationIdWidget.setText(operationId);
-        }else{
-            errorText.setText(transaction.getErrorMessage());
+        if(transaction != null){
+            if(transaction.getErrorMessage().equals("")){
+                jobNameWidget.setText(jobName);
+                operationNameWidget.setText(operationName);
+                jobIdWidget.setText(jobId);
+                operationIdWidget.setText(operationId);
+            }else{
+                errorText.setText("Failed to connect to remote server. Make sure wifi is connected to the CTG network.");
+            }
         }
-        jobNameWidget.setText(jobName);
-        operationNameWidget.setText(operationName);
-        jobIdWidget.setText(jobId);
-        operationIdWidget.setText(operationId);
 
         overlay.setOnClickListener(this);
 
@@ -96,7 +89,6 @@ public class TitleFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Log.d("Name Fragment", "OnClick");
-        Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStopFragment(transaction.getTransactionPath()));
+        Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStopFragment(transaction));
     }
 }

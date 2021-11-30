@@ -1,21 +1,17 @@
 package com.customtoolandgrinding.customtooldataapp.models;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
-
 import com.customtoolandgrinding.customtooldataapp.source.ConnectionError;
-
 import org.jetbrains.annotations.NotNull;
-
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity(tableName = "transaction_table")
-public class Transaction {
+public class Transaction implements Serializable {
 
     @PrimaryKey
     @NonNull
@@ -25,6 +21,7 @@ public class Transaction {
     private String logout = "";
     private String keyID = "";
     private String errorMessage = "";
+    private boolean timerSet = false;
 
     @Embedded
     private Job job;
@@ -44,6 +41,10 @@ public class Transaction {
         this.errorMessage = connectionError.getMessage();
     }
 
+    public void setTimerSet(boolean timerSet){    this.timerSet = timerSet; }
+
+    public boolean getTimerSet(){return this.timerSet;}
+
     public Job getJob() {
         return job;
     }
@@ -61,17 +62,10 @@ public class Transaction {
     }
 
     private void parsePath(String path) {
-        //OpStop.aspx?tranType=10&keyID=217000&tranID=5AE-6778-SH234-0&logOut=Yes
-
-        this.tranType = path.split("&", 4)[0].replace("OpStop.aspx?tranType=", "");
-        Log.d("parsePath", tranType);
-        this.keyID = path.split("&", 4)[1].replace("keyID=", "");
-        Log.d("parsePath", keyID);
-        this.tranID = path.split("&", 4)[2].replace("tranID=", "");
-        Log.d("parsePath", tranID);
-        this.logout = path.split("&", 4)[3].replace("logOut=", "");
-        Log.d("parsePath", logout);
-
+        this.tranType = path.split("&", 5)[0].replace("OpStop.aspx?tranType=", "");
+        this.keyID = path.split("&", 5)[1].replace("keyID=", "");
+        this.tranID = path.split("&", 5)[2].replace("tranID=", "");
+        this.logout = path.split("&", 5)[3].replace("logOut=", "");
     }
 
 

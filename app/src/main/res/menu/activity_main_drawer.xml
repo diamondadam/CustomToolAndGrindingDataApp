@@ -4,11 +4,9 @@
 
     <group>
         <item
-            android:id="@+id/employee_hours"
-            android:title="@string/employee_hours"/>
-        <item
             android:id="@+id/operation_start"
             android:title="Operation Start"/>
+
         <item
             android:id="@+id/clock_in_and_out"
             android:title="Clock In/Out"

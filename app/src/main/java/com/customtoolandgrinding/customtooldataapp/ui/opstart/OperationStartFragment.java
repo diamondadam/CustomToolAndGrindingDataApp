@@ -3,14 +3,16 @@ package com.customtoolandgrinding.customtooldataapp.ui.opstart;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 
 import android.os.Vibrator;
@@ -27,10 +29,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.customtoolandgrinding.customtooldataapp.source.TransactionRepository;
-import com.customtoolandgrinding.customtooldataapp.ui.MainActivity;
-import com.customtoolandgrinding.customtooldataapp.ui.transactions.TransactionsFragment;
-import com.customtoolandgrinding.customtooldataapp.ui.transactions.TransactionsFragmentDirections;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -41,12 +39,15 @@ import com.customtoolandgrinding.customtooldataapp.R;
 
 import java.io.IOException;
 
+import static android.content.Context.MODE_PRIVATE;
+import static com.google.android.gms.vision.L.TAG;
+
 
 public class OperationStartFragment extends Fragment {
     private static final int CAMERA_PERMISSION_CODE = 100;
     private static final int VIBRATE_PERMISSION_CODE = 200;
 
-    private String employeeId;
+    private String employeeID;
     private SurfaceView surfaceview;
     private CameraSource cameraSource;
     private TextView textView;
@@ -54,6 +55,8 @@ public class OperationStartFragment extends Fragment {
     private Vibrator vib;
     private int i = 0;
     private String prevBarcode = "";
+    private boolean setupTimer = false;
+    private View view;
 
     public OperationStartFragment() {
         // Required empty public constructor
@@ -67,9 +70,9 @@ public class OperationStartFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            employeeId = OperationStartFragmentArgs.fromBundle(getArguments()).getEmployeeId();
-            Log.d("OpStartFragment", "onCreate()");
-            Log.d("OpStartFragment", employeeId);
+            employeeID = OperationStartFragmentArgs.fromBundle(getArguments()).getEmployeeId();
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Settings", MODE_PRIVATE);
+            setupTimer = sharedPreferences.getBoolean("Auto Setup", false);
         }
     }
 
@@ -78,59 +81,44 @@ public class OperationStartFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
+        //mPermissionResult.launch(Manifest.permission.CAMERA);
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_operation_start, container, false);
-        displayBarcodeScanner(view);
+        view = inflater.inflate(R.layout.fragment_operation_start, container, false);
+        displayBarcodeScanner();
         return view;
     }
 
+    ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            new ActivityResultCallback<Boolean>() {
+                @Override
+                public void onActivityResult(Boolean result) {
+                    if (result) {
+                        Log.e(TAG, "onActivityResult: PERMISSION GRANTED");
+                        displayBarcodeScanner();
+                    } else {
+                        Log.e(TAG, "onActivityResult: PERMISSION DENIED");
+                        Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(OperationStartFragmentDirections.actionOperationStartFragmentToTransactionsFragment());
+                    }
+                }
+            });
 
-    // Function to check and request permission
-    public void checkPermission(String permission, int requestCode){
-        if (ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[] { permission }, requestCode);
-        } else {
-            Toast.makeText(getContext(), "Permission already granted", Toast.LENGTH_SHORT).show();
-        }
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-            // Checking whether user granted the permission or not.
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(getContext(), "Camera Permission Granted", Toast.LENGTH_SHORT).show();
-                displayBarcodeScanner(getView());
-            } else {
-                Toast.makeText(getContext(), "Camera Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-        }else if (requestCode == VIBRATE_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(getContext(), "Storage Permission Granted", Toast.LENGTH_SHORT).show();
-            }
-            else {
-                Toast.makeText(getContext(), "Storage Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void displayBarcodeScanner(View view){
-
+    private void displayBarcodeScanner() {
         surfaceview = view.findViewById(R.id.camera_surface_view);
         textView = view.findViewById(R.id.opId);
         Button startButton = view.findViewById(R.id.op_start_button);
-        startButton.setOnClickListener(new View.OnClickListener(){
+
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String opCode = String.valueOf(textView.getText());
-                if(opCode != null && opCode.length() == 6 && opCode.matches("[0-9]+")){
+                if (opCode != null && opCode.length() == 6 && opCode.matches("[0-9]+")) {
                     startWebView(view, opCode);
-                    TransactionRepository.getInstance(getActivity().getApplication()).updateTransactions();
                     Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(OperationStartFragmentDirections.actionOperationStartFragmentToTransactionsFragment());
-
-                }else{
+                } else {
                     Toast.makeText(getContext(), "Wrong format!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -150,18 +138,17 @@ public class OperationStartFragment extends Fragment {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 try {
-                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                        checkPermission(Manifest.permission.CAMERA, CAMERA_PERMISSION_CODE);
-                    }else{
-                        cameraSource.start(holder);
+                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        mPermissionResult.launch(Manifest.permission.CAMERA);
                     }
+                    cameraSource.start(holder);
                 }catch(IOException e){
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+            public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int i, int i1, int i2) {}
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
@@ -173,9 +160,7 @@ public class OperationStartFragment extends Fragment {
             private final Context context = getContext();
 
             @Override
-            public void release() {
-
-            }
+            public void release() {}
 
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
@@ -207,10 +192,9 @@ public class OperationStartFragment extends Fragment {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webView.loadUrl("http://10.10.8.4/dcmobile2/");
-        OpStartWebViewClient opStartWebViewClient = new OpStartWebViewClient(employeeId, operationId, getActivity().getApplication());
+
+        OpStartWebViewClient opStartWebViewClient = new OpStartWebViewClient(employeeID, operationId, getActivity().getApplication());
         webView.setWebViewClient(opStartWebViewClient);
-        //TODO Sync database and spin sync button
-        MainActivity activity = (MainActivity) getActivity();
-        activity.startSync();
+
     }
 }

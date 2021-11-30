@@ -22,6 +22,7 @@
             android:id="@+id/action_transactionsFragment_to_yourHoursFragment"
             app:destination="@id/yourHoursFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/operationStartFragment"
         android:name="com.customtoolandgrinding.customtooldataapp.ui.opstart.OperationStartFragment"
@@ -31,14 +32,18 @@
             android:id="@+id/action_operationStartFragment_to_transactionsFragment"
             app:destination="@id/transactionsFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/operationStopFragment"
         android:name="com.customtoolandgrinding.customtooldataapp.ui.opstop.OperationStopFragment"
         tools:layout="@layout/fragment_operation_stop">
 
+        <action
+            android:id="@+id/action_operationStopFragment_to_transactionsFragment"
+            app:destination="@id/transactionsFragment" />
         <argument
-            android:name="transaction_path"
-            app:argType="string" />
+            android:name="Transaction"
+            app:argType="com.customtoolandgrinding.customtooldataapp.models.Transaction" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment2"

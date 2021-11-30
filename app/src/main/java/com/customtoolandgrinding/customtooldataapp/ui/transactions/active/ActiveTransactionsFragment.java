@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.customtoolandgrinding.customtooldataapp.R;
 import com.customtoolandgrinding.customtooldataapp.adapters.TransactionRecyclerAdapter;
+import com.customtoolandgrinding.customtooldataapp.models.Transaction;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,13 +38,12 @@ public class ActiveTransactionsFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d("CurrentFragment", "onCreate");
+
         super.onCreate(savedInstanceState);
         ActiveTransactionsViewModel model = new ViewModelProvider(this, new ActiveTransactionsViewModelFactory(this.getActivity().getApplication())).get(ActiveTransactionsViewModel.class);
-        Log.d("CurrentFragment", "...Creating Adapter");
+
         transactionRecyclerAdapter = new TransactionRecyclerAdapter(this, model.getTransactions());
         model.getTransactions().observe(this, transactions -> {
-            Log.d("CurrentFragment", "...Updating Adapter");
             transactionRecyclerAdapter.notifyDataSetChanged();
         });
     }

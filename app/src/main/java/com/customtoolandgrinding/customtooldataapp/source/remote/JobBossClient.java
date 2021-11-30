@@ -19,6 +19,8 @@ import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -32,12 +34,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-//TODO handle PICK AND BUY exceptions
-//TODO grab Date data
 public class JobBossClient {
     private static final String USER_AGENT =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36";
-    private final String employeeId;
+    private final String employeeID;
 
     private static final String HOME = "/Home.aspx";
     private static final String DEFAULT = "/Default.aspx";
@@ -53,102 +53,100 @@ public class JobBossClient {
 
     /**
      * Constructor, object requires employee id to function
-     * @param employeeId
+     * @param employeeID
      */
-    public JobBossClient(String employeeId) {
-        this.employeeId = employeeId;
+    public JobBossClient(String employeeID) {
+        this.employeeID = employeeID;
     }
 
     /**
      * Function that obtains all data for current employee transactions.
      * @return List of Transaction objects
      */
-    public List<Transaction> getTransactions() throws ConnectionError {
-/*        Transaction transaction1 = new Transaction();
-        transaction1.setTranID("Transaction 1");
-        transaction1.setLogout("No");
-        Job job = new Job("Fake Job");
-        Operation operation = new Operation("Fake Operation");
-        transaction1.setJob(job);
-        transaction1.setOperation(operation);
+    public HashMap<String, Transaction> getTransactions(HashMap<String, Transaction> oldTransactions) {
+        //Initialize HashMap
+        HashMap<String, Transaction> transactions = new HashMap<>();
+        try {
+            //Begin connecting
+            initializeConnection();
 
-        Transaction transaction2 = new Transaction();
-        transaction2.setTranID("Transaction 2");
-        transaction2.setLogout("No");
-        job = new Job("Fake Job");
-        operation = new Operation("Fake Operation");
-        transaction2.setJob(job);
-        transaction2.setOperation(operation);
+            //Login to website
+            login();
 
-        Transaction transaction3 = new Transaction();
-        transaction3.setTranID("Transaction 3");
-        transaction3.setLogout("Yes");
-        job = new Job("Fake Job");
-        operation = new Operation("Fake Operation");
-        transaction3.setJob(job);
-        transaction3.setOperation(operation);
+            //Obtain response body from the Job Entries page
+            Document document = Jsoup.parse(getPageContent(JOB_ENTRIES));
 
-        return new ArrayList<>(Arrays.asList(transaction1, transaction2, transaction3));*/
+            //Break html up by transactions
+            Elements links = document.getElementsByAttribute("href");
 
-        //Initialize ArrayList
-        List<Transaction> transactions = new ArrayList<>();
+            //For each transaction
+            for (Element elem : links) {
+                // Move through all the links and find the entry routes
+                String link = elem.attr("href");
+                if (link.contains("OpStop.aspx")) {
+                    //Create Transaction object
+                    Transaction singleTransaction = new Transaction(link);
 
-        //Begin connecting
-        initializeConnection();
+                    if(!oldTransactions.containsKey(singleTransaction.getTransactionPath())){
+                        //Get Job Data
+                        Pair<Job, Operation> pair = getJobData(JOB_DETAILS.concat("?id=" + elem.text()), singleTransaction.getOperationId());
 
-        //Login to website
-        login();
+                        // Set Job data
+                        singleTransaction.setJob(pair.first);
+                        singleTransaction.setOperation(pair.second);
 
-        //Obtain response body from the Job Entries page
-        Document document = Jsoup.parse(getPageContent(JOB_ENTRIES));
-
-
-
-        //Break html up by transactions
-        Elements links = document.getElementsByAttribute("href");
-
-        //For each transaction
-        for (Element elem : links) {
-            // Move through all the links and find the entry routes
-            String link = elem.attr("href");
-            if (link.contains("OpStop.aspx")) {
-                //Create Transaction object
-                Transaction singleTransaction = new Transaction(link);
-
-                //Get Job Data
-                Pair<Job, Operation> pair = getJobData(JOB_DETAILS.concat("?id=" + elem.text()), singleTransaction.getOperationId());
-
-                // Set Job data
-                singleTransaction.setJob(pair.first);
-                singleTransaction.setOperation(pair.second);
-
-                //Add Transaction to list
-                transactions.add(singleTransaction);
+                        transactions.put(singleTransaction.getTransactionPath(), singleTransaction);
+                    }else{
+                        transactions.put(singleTransaction.getTransactionPath(), oldTransactions.get(singleTransaction.getTransactionPath()));
+                    }
+                }
             }
+            return transactions;
+        } catch (ConnectionError connectionError){
+            Transaction activeErrorTransaction = new Transaction(connectionError);
+            activeErrorTransaction.setTranID("Active Error");
+            activeErrorTransaction.setLogout("No");
+            Job job = new Job("");
+            Operation operation = new Operation("");
+            activeErrorTransaction.setJob(job);
+            activeErrorTransaction.setOperation(operation);
+
+            Transaction inactiveErrorTransaction = new Transaction(connectionError);
+            inactiveErrorTransaction.setTranID("Inactive Error");
+            inactiveErrorTransaction.setLogout("Yes");
+            job = new Job("");
+            operation = new Operation("");
+            inactiveErrorTransaction.setJob(job);
+            inactiveErrorTransaction.setOperation(operation);
+
+            transactions.put("Inactive Error", inactiveErrorTransaction);
+            transactions.put("Active Error", activeErrorTransaction);
+            return transactions;
         }
-        return transactions;
     }
 
 
-    public PunchHole getClockInOutTime() throws ConnectionError {
-
-        //Begin connecting
-        initializeConnection();
-
-        //Login to website and grab time
-        PunchHole punchHole = new PunchHole(login());
-        Log.d("getClockInOutTime()", punchHole.getDate() + punchHole.getDay());
-        return punchHole;
-
+    public PunchHole getClockInOutTime() {
+        try {
+            //Begin connecting
+            initializeConnection();
+            //Login to website and grab time
+            return new PunchHole(login());
+        } catch (ConnectionError connectionError) {
+            return new PunchHole("No Connection");
+        }
     }
 
-    public boolean isPunchedIn() throws ConnectionError {
-        //Begin connecting
-        initializeConnection();
+    public boolean isPunchedIn(){
+        try{
+            //Begin connecting
+            initializeConnection();
 
-        //Login to website and grab time
-        PunchHole punchHole = new PunchHole(login());
-        return punchHole.getPrefix();
+            //Login to website and grab time
+            return new PunchHole(login()).getPrefix();
+        }catch (ConnectionError connectionError){
+            return false;
+        }
     }
 
     /**
@@ -196,7 +194,7 @@ public class JobBossClient {
                 .addFormDataPart("__VIEWSTATE", viewSt)
                 .addFormDataPart("__VIEWSTATEGENERATOR", viewGen)
                 .addFormDataPart("__EVENTVALIDATION", eventVal)
-                .addFormDataPart("ctl00$MainContent$txtLogin", employeeId)
+                .addFormDataPart("ctl00$MainContent$txtLogin", employeeID)
                 .addFormDataPart("ctl00$MainContent$btnLogin", "Log In")
                 .addFormDataPart("ctl00$TimoutControl1$TimeoutPopupState", "{&quot;windowsState&quot;:&quot;0:0:-1:0:0:0:-10000:-10000:1:0:0:0&quot;}")
                 .addFormDataPart("DXScript", "1_258,1_139,1_252,1_165,1_142,1_136,1_244,1_242,1_152,1_185,1_137")
@@ -260,15 +258,15 @@ public class JobBossClient {
                 }
             }
 
-            Log.d("getPageContent()", "\n\tSending 'GET' request to URL: " + urlBase.concat(url_ext));
-            Log.d("getPageContent()", "\n\tResponse Code: " + conn.getResponseCode());
+            //
+            //
 
             //Initialize BufferedReader
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String inputLine;
             StringBuilder response = new StringBuilder();
 
-            Log.d("getPageContent()", "Reading input...");
+            //
 
             //While there is more lines read input
             while ((inputLine = in.readLine()) != null) {
@@ -318,7 +316,7 @@ public class JobBossClient {
         }
 
         //Initializes Job and Operation objects
-        Job job = new Job(employeeId);
+        Job job = new Job(employeeID);
         Operation operation = new Operation(operationId);
 
         //Parse HTML response

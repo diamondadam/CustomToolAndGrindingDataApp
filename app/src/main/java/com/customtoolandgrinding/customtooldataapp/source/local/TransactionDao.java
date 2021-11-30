@@ -29,16 +29,13 @@ public interface TransactionDao {
     @Query("SELECT * FROM transaction_table WHERE logout = :logout_status")
     List<Transaction> getNonLiveTransactions(String logout_status);
 
-    @Query("SELECT * FROM transaction_table WHERE operationNumber = :operationNumber")
-    LiveData<List<Transaction>> findByOperationNumber(String operationNumber);
-
+    @Query("SELECT * FROM transaction_table WHERE tranID = :transactionNumber")
+    Transaction getTransaction(String transactionNumber);
 
     @Query("SELECT * FROM transaction_table")
     List<Transaction> selectAll();
 
     @Query("DELETE FROM transaction_table WHERE tranID = :transactionId")
-    void deleteOne(String transactionId);
+    void deleteTransaction(String transactionId);
 
-    @Query("DELETE FROM transaction_table WHERE transactionPath = :transactionPath")
-    void deleteTransactionByPath(String transactionPath);
 }

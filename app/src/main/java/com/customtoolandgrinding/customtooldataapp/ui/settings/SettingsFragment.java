@@ -65,7 +65,6 @@ public class SettingsFragment extends Fragment {
         autoSetupSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d(AUTO_SETUP, String.valueOf(isChecked));
                 editor.putBoolean(AUTO_SETUP, isChecked);
 
             }
@@ -75,7 +74,6 @@ public class SettingsFragment extends Fragment {
         quickPunchSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d(QUICK_PUNCH, String.valueOf(isChecked));
                 editor.putBoolean(QUICK_PUNCH, isChecked);
             }
         });

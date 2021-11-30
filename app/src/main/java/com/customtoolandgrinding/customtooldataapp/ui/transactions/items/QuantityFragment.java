@@ -98,6 +98,6 @@ public class QuantityFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Log.d("Quantities Fragment", "OnClick");
+
     }
 }

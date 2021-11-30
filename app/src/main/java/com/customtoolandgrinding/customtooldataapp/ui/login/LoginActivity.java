@@ -16,7 +16,7 @@ import com.customtoolandgrinding.customtooldataapp.ui.MainActivity;
 
 
 public class LoginActivity extends AppCompatActivity {
-    private String employeeId;
+    private String employeeID;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,19 +40,19 @@ public class LoginActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                employeeId = String.valueOf(editText.getText());
-                if (employeeId.length() != 4) {
+                employeeID = String.valueOf(editText.getText());
+                if (employeeID.length() != 4) {
                     loginText.setText("Incorrect code...");
                 }else {
                     SharedPreferences sharedPreferences = getSharedPreferences("Employee Identification", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("ID", employeeId);
+                    editor.putString("ID", employeeID);
                     editor.apply();
                     startMainActivity();
                 }
             }
         });
-        }
+    }
 
     private void startMainActivity(){
         Intent intent = new Intent(this, MainActivity.class);
