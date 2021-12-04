@@ -70,16 +70,13 @@ public class OpStartWebViewClient extends WebViewClient {
             view.evaluateJavascript(js, s -> {
             });
         } else if (url.contains("OperationStart.aspx")) {
+
             final String js = "javascript:" +
                     "document.getElementById('txtOpKey_I').value = '" + operationId + "';" +
                     "document.getElementById('MainContent_btnOpStart').click()";
 
             view.evaluateJavascript(js, s -> {
             });
-            view.destroy();
-        } else if (url.contains("JobEntries.aspx")) {
-            TransactionRepository transactionRepository = TransactionRepository.getInstance(application);
-            transactionRepository.syncDatabasesThreaded();
         }
         super.onPageFinished(view, url);
     }

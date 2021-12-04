@@ -1,26 +1,27 @@
 package com.customtoolandgrinding.customtooldataapp.ui;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -33,13 +34,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.customtoolandgrinding.customtooldataapp.R;
 import com.customtoolandgrinding.customtooldataapp.source.TransactionRepository;
 import com.customtoolandgrinding.customtooldataapp.services.PunchInService;
 import com.customtoolandgrinding.customtooldataapp.services.PunchOutService;
-import com.customtoolandgrinding.customtooldataapp.ui.opstop.OperationStopFragment;
 import com.customtoolandgrinding.customtooldataapp.ui.transactions.TransactionsFragmentDirections;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -47,10 +46,9 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.google.android.gms.vision.L.TAG;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    //TODO fix camera reset after permissions
-    //Todo fix animation repeat bug
-    //TODO fix Clock in and Out
     private static final String CHANNEL_ID = "CustomTool0001";
     private AppBarConfiguration appBarConfiguration;
     private DrawerLayout drawerLayout;
@@ -61,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private MenuItem refreshItem;
     private TextView navigationHeaderTitle;
-    public boolean isSpinning = false;
     private FloatingActionButton addTransaction;
 
     @Override
@@ -99,11 +96,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         addTransaction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navController.navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStartFragment(empID));
+                getCameraPermission();
             }
         });
 
-        //timesObserver();
+        timesObserver();
     }
 
     @Override
@@ -143,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 drawerLayout.closeDrawer(GravityCompat.START);
                 break;*/
             case R.id.operation_start:
-                Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStartFragment(empID));
+                getCameraPermission();
                 drawerLayout.closeDrawer(GravityCompat.START);
                 addTransaction.hide();
                 break;
@@ -272,5 +269,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if(addTransaction != null){addTransaction.show();}
             }
         });
+    }
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStartFragment(empID));
+                    Log.e(TAG, "onActivityResult: PERMISSION GRANTED");
+                } else {
+
+                    Log.e(TAG, "onActivityResult: PERMISSION DENIED");
+                }
+            });
+
+    private void getCameraPermission(){
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToOperationStartFragment(empID));
+        }  else {
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
     }
 }

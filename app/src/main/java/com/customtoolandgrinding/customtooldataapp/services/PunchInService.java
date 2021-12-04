@@ -20,7 +20,6 @@ public class PunchInService extends Service {
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-
         final WebView webView = new WebView(this);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
