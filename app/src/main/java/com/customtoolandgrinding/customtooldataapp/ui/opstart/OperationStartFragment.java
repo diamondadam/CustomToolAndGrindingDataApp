@@ -41,6 +41,7 @@ public class OperationStartFragment extends Fragment {
     private int i = 0;
     private String prevBarcode = "";
     private Vibrator vib;
+
     public OperationStartFragment() {
         // Required empty public constructor
     }
@@ -136,9 +137,8 @@ public class OperationStartFragment extends Fragment {
 
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
-                SparseArray<Barcode> barCodes= detections.getDetectedItems();
+                SparseArray<Barcode> barCodes = detections.getDetectedItems();
                 if(barCodes.size() > 0) {
-
                     if (i == 0) {
                         textView.setText(barCodes.valueAt(0).displayValue);
                         vib = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -160,6 +160,7 @@ public class OperationStartFragment extends Fragment {
         });
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void startWebView(View view, String operationId){
         WebView webView = view.findViewById(R.id.operation_start_web_view);
         WebSettings webSettings = webView.getSettings();
