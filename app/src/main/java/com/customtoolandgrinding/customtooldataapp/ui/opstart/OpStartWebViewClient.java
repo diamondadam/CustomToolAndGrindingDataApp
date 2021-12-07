@@ -46,7 +46,6 @@ public class OpStartWebViewClient extends WebViewClient {
 
     public OpStartWebViewClient(String employeeID, String operationId, Application application) {
         super();
-
         this.application = application;
         this.employeeID = employeeID;
         this.operationId = operationId;

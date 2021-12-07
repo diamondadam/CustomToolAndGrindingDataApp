@@ -168,7 +168,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToSettingsFragment2());
+                int current_frag = Navigation.findNavController(this, R.id.nav_host_fragment).getCurrentDestination().getId();
+                if(current_frag == R.id.operationStartFragment) {
+                    Navigation.findNavController(this, R.id.nav_host_fragment).navigate(TransactionsFragmentDirections.actionTransactionsFragmentToSettingsFragment2());
+                }
+
                 return true;
             case R.id.action_sync:
                 startSync();
@@ -262,10 +266,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void navOnChange(NavController navController){
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            if(destination.getId() == R.id.operationStartFragment) {
+            if(destination.getId() != R.id.transactionsFragment){
                 addTransaction.hide();
-            } else if(destination.getId() == R.id.transactionsFragment){
-                //startSync();
+            }else{
                 if(addTransaction != null){addTransaction.show();}
             }
         });
